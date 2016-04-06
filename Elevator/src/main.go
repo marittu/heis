@@ -25,9 +25,11 @@ func main() {
 	
 	go userInterfaceDriver.NewOrder(chButtonPressed)
 	go userInterfaceDriver.FloorTracker(chGetFloor)
-	go manager.ChannelHandler(chButtonPressed, chGetFloor)
-	go network.Manager(chToNetwork, chFromNetwork)	
+	go manager.ChannelHandler(chButtonPressed, chGetFloor, chFromNetwork, chToNetwork)
+	go network.NetworkHandler(chToNetwork, chFromNetwork)	
 	
 
 	for{}
+
+	
 }

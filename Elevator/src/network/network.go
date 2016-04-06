@@ -4,7 +4,7 @@ import(
 	"time"
 	"net"
 	"strings"
-	"fmt"
+	//"fmt"
 	"strconv"
 	
 )
@@ -17,9 +17,9 @@ type Connection struct{
 var ConnectedElevs []Connection
 
 type elevManager struct{
-	selfIP string
-	elevators Connection
-	master string  
+	SelfIP string
+	Elevators Connection
+	Master string  
 }
 
 var elev elevManager
@@ -31,21 +31,20 @@ func broadcastIP(IP string, chSend chan Message){
 	}
 }
 
-func Manager(chIn chan Message, chOut chan Message){ 
+func NetworkHandler(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
-	selfIP := strings.Split(addr[1].String(),"/")[0]
+	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	//fmt.Println(selfIP)
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
 
-	go broadcastIP(selfIP, chUDPSend)
+	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
 
 	for{
 		select{
 		case received := <- chUDPReceive:
-
 			added := false
 			for elev := 0; elev < len(ConnectedElevs); elev++{
 				//fmt.Println("Elevators added: ", ConnectedElevs[elev].IP)
@@ -60,12 +59,26 @@ func Manager(chIn chan Message, chOut chan Message){
 			}
 
 			selectMaster()
+
+			chOut <- received
+
+		case send := <-chIn:
+			chUDPSend <- send
+
 			
 		}
 	}
 
 }
 
+func ElevManagerInit() elevManager {
+
+	
+	return elev
+
+
+
+}
 
 func AppendConn(IP string){
 	var temp Connection
@@ -88,9 +101,9 @@ func selectMaster(){
 		}
 	}
 	
-	elev.master = masterIP
+	elev.Master = masterIP
 	
-	fmt.Println("Master: ", elev.master)
+	//fmt.Println("Master: ", elev.master)
 }
 
 

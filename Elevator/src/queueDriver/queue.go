@@ -7,6 +7,7 @@ import (
 )
 
 var Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
+var MasterQueue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 var Info elevatorDriver.ElevInfo
 
 
@@ -16,12 +17,21 @@ func QueueInit(){
 		{0, 0, 0}, 
 		{0, 0, 0}, 
 		{-1, 0, 0}}
+
+	MasterQueue = Queue
 }
 
 func AddOrder(order elevatorDriver.Button){
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
 }
+
+func AddOrderMasterQueue(order elevatorDriver.Button){
+	MasterQueue[order.Floor][order.ButtonType] = 1
+	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
+	//sett elevsetbuttonlamp på alle heiser
+}
+
 func EmptyQueue()bool{
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
 			for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
@@ -94,7 +104,7 @@ func setDir(dir int){
 
 func PassingFloor(floor int){ 
 	setCurrentFloor(floor)
-	//elevatorDriver.ElevSetFloorIndicator(floor)
+	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := getDir()
 
 	if EmptyQueue() == true{
@@ -175,13 +185,14 @@ func GetDirection(){
 
 }
 
-func printQueue(){
+func PrintQueue(){
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
 			for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-				fmt.Print(Queue[floor][button])
+				fmt.Print(MasterQueue[floor][button])
 			} 
 			fmt.Println()
 	}
+	fmt.Println()
 }
 
 

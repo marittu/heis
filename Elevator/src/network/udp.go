@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	PORT = ":33005"
+	PORT = ":33795"
 )
 
 func UDPSender (chSend chan Message){
