@@ -3,43 +3,52 @@ package network
 import(
 	"time"
 	"net"
+	"strings"
 	"fmt"
+	
 )
 
-var elevTimers map[int]*time.Timer 
-
-func broadcastIP (ID int, chSend chan Message){
+func broadcastIP(IP string, chSend chan Message){
 	for{
-		chSend <- Message{Source: ID, Id: IP}
+		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
 		time.Sleep(100*time.Millisecond)
 	}
 }
 
-func manager(chIn chan Messagen chOut chan Message){
+func Manager(chIn chan Message, chOut chan Message){ //chIn chan Message, chOut chan Message
 	addr, _ := net.InterfaceAddrs()
-	selfID := int(addr[1].Strings()[12] - '0') * 100 + int(addr[1].Strings()[][13] - '0') * 10 + int(addr[1].String()[14] - '0')
-
-	chUDPSend := nake(chan Message, 100)
+	selfIP := strings.Split(addr[1].String(),"/")[0]
+	fmt.Println(selfIP)
+	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
 
-	go broadcastIP(selfID, chUDPSend)
-	go UDPLIstener(chUDPReceive)
+	go broadcastIP(selfIP, chUDPSend)
+	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
-
-	elevTimers = make(map[int]*time.Timer)
 
 	for{
 		select{
-		case msg := chUDPReceive:
-			_, present := elevTimers[msg.Source]
+		case received := <- chUDPReceive:
+			fmt.Println(received.FromIP)
+		}
+	}
+	/*
 
-			if msg.ID == IP{ //hvor har vi IP fra
-				if msg.Source != selfID{
+	for{
+		select{
+		case msg := <- chUDPReceive:
+			_, present := connected[msg.FromIP]
+
+			if msg.MessageId == Ping{ 
+				if msg.FromIP != selfIP{
 					if present{
-						elevTimers[msg.Source].Reset(time.Second)
+						connected[msg.FromIP].LastSignal = time.Now()
 					}else{
-						elevTimers[msg.Source] = time.AfterFunc(time.Second, func() {removeElev(msg.Source, chIn)})
-						chOut <- Message{Source : msg.Source, Id : ElevatorAdded}
+						if time.Since(connected[msg.FromIP].LastSignal) > 900 * time.Millisecond{
+							removeElev(msg.FromIP, chIn)
+							chOut <- Message{FromIP : msg.FromIP, MessageId : ElevatorAdded}	
+						}
+						
 					}
 				}
 				break
@@ -50,10 +59,10 @@ func manager(chIn chan Messagen chOut chan Message){
 		case msg := <-chIn:
 			chUDPSend <- msg
 		}
-	}
+	}*/
 }
-
-func removeElev(id int, chOut chan Message){
-	delete(elevTimers, id)
-	chOut <- Message{Source: id, Id: ElevatorRemoved}
-}
+/*
+func removeElev(IP string, chOut chan Message){
+	//delete(elevTimers, IP)
+	chOut <- Message{FromIP: IP, MessageId: ElevatorRemoved}
+}*/

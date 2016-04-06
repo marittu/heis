@@ -3,19 +3,18 @@ package network
 //Kan evt flyttes til config - kanskje bedre
 
 const( //type of network message
-	IP = iota
-	ElevatorPassingFloor
-	ElevatorStopping //trenger vi denne?
-	ElevatorRunning //trenger vi denne?
-	ElevatorAdded
-	ElevatorRemoved
-	Ack
-	//Master
+	Ping = 1
+	ElevatorAdded = 2
+	ElevatorRemoved = 3
+	ElevState = 4
+	NewOrder = 5
+	MasterOrder = 6
+	
 )
 
 type Message struct{
-	Source int
-	Id int
-	Floor int
-	Target int //hvilken heis som er target? trenger ikke target for etasje
+	MessageId int
+	FromIP string
+	ToIP string
+	
 }
