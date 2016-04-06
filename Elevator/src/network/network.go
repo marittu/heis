@@ -5,6 +5,7 @@ import(
 	"net"
 	"strings"
 	"fmt"
+	"strconv"
 	
 )
 
@@ -75,13 +76,20 @@ func AppendConn(IP string){
 }
 
 func selectMaster(){
+	var masterIP string
 	min := 256
 	for i, _ := range ConnectedElevs{
-		if i < min{
-			min = i
+
+	endIP, _ := strconv.Atoi(strings.Replace(ConnectedElevs[i].IP, "129.241.187.", "", -1))
+	
+		if endIP < min{
+			min = endIP
+			masterIP = ConnectedElevs[i].IP
 		}
 	}
-	elev.master = ConnectedElevs[min].IP
+	
+	elev.master = masterIP
+	
 	fmt.Println("Master: ", elev.master)
 }
 
