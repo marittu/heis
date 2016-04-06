@@ -103,7 +103,7 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	//fmt.Println("Master: ", elev.master)
+	//fmt.Println("Master: ", elev.Master)
 }
 
 
