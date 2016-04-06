@@ -1,31 +1,31 @@
 package main
 
 import (
-	//"./elevatorDriver"
-	//"./userInterfaceDriver"
-	//"./queueDriver"
-	//"./manager"
+	"./elevatorDriver"
+	"./userInterfaceDriver"
+	"./queueDriver"
+	"./manager"
 	//"fmt"
 	//"time"
 	"./network"
 	
 )
 
-//var chButtonPressed = make(chan elevatorDriver.Button)
-//var chGetFloor = make(chan int)
+var chButtonPressed = make(chan elevatorDriver.Button)
+var chGetFloor = make(chan int)
 var chToNetwork = make(chan network.Message, 100)
 var chFromNetwork = make(chan network.Message, 100)
 
 func main() {
 
 	
-	//queueDriver.QueueInit()
-	//elevatorDriver.ElevInit()
+	queueDriver.QueueInit()
+	elevatorDriver.ElevInit()
 
 	
-	//go userInterfaceDriver.NewOrder(chButtonPressed)
-	//go userInterfaceDriver.FloorTracker(chGetFloor)
-	//go manager.ChannelHandler(chButtonPressed, chGetFloor)
+	go userInterfaceDriver.NewOrder(chButtonPressed)
+	go userInterfaceDriver.FloorTracker(chGetFloor)
+	go manager.ChannelHandler(chButtonPressed, chGetFloor)
 	go network.Manager(chToNetwork, chFromNetwork)	
 	
 

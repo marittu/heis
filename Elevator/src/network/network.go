@@ -8,6 +8,21 @@ import(
 	
 )
 
+type Connection struct{
+	IP string
+	LastPing time.Time
+}
+
+var ConnectedElevs []Connection
+
+type elevManager struct{
+	selfIP string
+	elevators Connection
+	master string  
+}
+
+var elev elevManager
+
 func broadcastIP(IP string, chSend chan Message){
 	for{
 		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
@@ -15,10 +30,10 @@ func broadcastIP(IP string, chSend chan Message){
 	}
 }
 
-func Manager(chIn chan Message, chOut chan Message){ //chIn chan Message, chOut chan Message
+func Manager(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
 	selfIP := strings.Split(addr[1].String(),"/")[0]
-	fmt.Println(selfIP)
+	//fmt.Println(selfIP)
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
 
@@ -29,40 +44,48 @@ func Manager(chIn chan Message, chOut chan Message){ //chIn chan Message, chOut 
 	for{
 		select{
 		case received := <- chUDPReceive:
-			fmt.Println(received.FromIP)
-		}
-	}
-	/*
 
-	for{
-		select{
-		case msg := <- chUDPReceive:
-			_, present := connected[msg.FromIP]
-
-			if msg.MessageId == Ping{ 
-				if msg.FromIP != selfIP{
-					if present{
-						connected[msg.FromIP].LastSignal = time.Now()
-					}else{
-						if time.Since(connected[msg.FromIP].LastSignal) > 900 * time.Millisecond{
-							removeElev(msg.FromIP, chIn)
-							chOut <- Message{FromIP : msg.FromIP, MessageId : ElevatorAdded}	
-						}
-						
-					}
+			added := false
+			for elev := 0; elev < len(ConnectedElevs); elev++{
+				//fmt.Println("Elevators added: ", ConnectedElevs[elev].IP)
+				if received.FromIP == ConnectedElevs[elev].IP{
+					added = true
 				}
-				break
+				
+			}
+			if added == false{
+				AppendConn(received.FromIP)
+
 			}
 
-			chOut <- msg
-
-		case msg := <-chIn:
-			chUDPSend <- msg
+			selectMaster()
+			
 		}
-	}*/
+	}
+
 }
-/*
-func removeElev(IP string, chOut chan Message){
-	//delete(elevTimers, IP)
-	chOut <- Message{FromIP: IP, MessageId: ElevatorRemoved}
-}*/
+
+
+func AppendConn(IP string){
+	var temp Connection
+	temp.IP = IP
+	temp.LastPing = time.Now()
+
+	ConnectedElevs = append(ConnectedElevs, temp)
+}
+
+func selectMaster(){
+	min := 256
+	for i, _ := range ConnectedElevs{
+		if i < min{
+			min = i
+		}
+	}
+	elev.master = ConnectedElevs[min].IP
+	fmt.Println("Master: ", elev.master)
+}
+
+
+
+
+//func RemoveConn()

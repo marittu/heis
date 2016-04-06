@@ -2,10 +2,13 @@ package queueDriver
 
 import (
 	"../elevatorDriver"
-	//"fmt"
+	"fmt"
+	"time"
 )
 
 var Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
+var Info elevatorDriver.ElevInfo
+
 
 func QueueInit(){
 	Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{
@@ -60,4 +63,125 @@ func DeleteOrder(floor int){
 			}
 		}
 }
+
+func openDoor(floor int){
+	DeleteOrder(floor)
+	elevatorDriver.ElevSetDoorOpenLamp(1)
+	time.Sleep(2*time.Second)
+	elevatorDriver.ElevSetDoorOpenLamp(0)
+	GetDirection()
+	//printQueue()
+
+
+}
+
+func setCurrentFloor(floor int){
+	Info.CurrentFloor = floor    
+}
+
+func getCurrentFloor() int{
+	return Info.CurrentFloor
+}
+
+func getDir()int{
+	return Info.Dir
+}
+
+func setDir(dir int){
+	Info.Dir = dir
+	
+}
+
+func PassingFloor(floor int){ 
+	setCurrentFloor(floor)
+	//elevatorDriver.ElevSetFloorIndicator(floor)
+	dir := getDir()
+
+	if EmptyQueue() == true{
+		elevatorDriver.ElevDrive(0)
+		setDir(0)
+		
+	}else{
+		if Queue[floor][2] == 1{
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			openDoor(floor)	
+
+		}else if (dir == 1 && Queue[floor][0] == 1){
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			openDoor(floor)
+			
+		}else if (dir == -1 && Queue[floor][1] == 1){
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			openDoor(floor)
+			
+		}	
+	}
+	
+}
+
+func GetDirection(){
+	
+	currentDir := getDir()
+	currentFloor := getCurrentFloor()		
+	if EmptyQueue() == true{
+		setDir(0)
+		
+	}else{
+		
+		switch(currentDir){
+		case 0:
+			for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
+				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+					if Queue[floor][button] == 1{
+						if floor > currentFloor{
+							setDir(1)
+							elevatorDriver.ElevDrive(1)
+						}else if floor < currentFloor{
+							setDir(-1)
+							elevatorDriver.ElevDrive(-1)
+						}else if floor == currentFloor{
+							openDoor(floor)
+						}
+
+					}
+				}
+			}
+		case 1:
+			if OrderAbove(currentFloor){
+				elevatorDriver.ElevDrive(1)
+			}else if OrderBelow(currentFloor){	
+				setDir(-1)
+				elevatorDriver.ElevDrive(-1)
+			}
+		case -1:
+			if OrderBelow(currentFloor){
+
+				elevatorDriver.ElevDrive(-1)
+			}else if OrderAbove(currentFloor){	
+				setDir(1)
+				elevatorDriver.ElevDrive(1)
+			}
+
+
+
+
+		}
+
+	}
+
+
+}
+
+func printQueue(){
+	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
+			for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+				fmt.Print(Queue[floor][button])
+			} 
+			fmt.Println()
+	}
+}
+
 
