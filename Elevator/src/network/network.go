@@ -40,28 +40,25 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 		select{
 		case received := <- chUDPReceive:
 			
-			added := false
+			AppendConn(received.FromIP)
+			selectMaster()			
 			for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
-				
+
+				fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
+		
 
 				if received.MessageId == Ping{ 
 					elevatorDriver.ConnectedElevs[elev].LastPing = time.Now()
 				}
-				fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
-				if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP{
-					added = true
-					selectMaster()
-				}
+				
+
 				stillAlive := elevatorDriver.ConnectedElevs[elev]
 				if (time.Since(stillAlive.LastPing) > 900*time.Millisecond){
 					RemoveConn(elev)
 				
 				}
-				if added == false{
-					AppendConn(received.FromIP)
-
-				}
-				break 
+				
+				
 
 			}
 			chOut <- received
