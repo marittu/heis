@@ -41,11 +41,12 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 		case received := <- chUDPReceive:
 			
 			AppendConn(received.FromIP)
-			selectMaster()			
+			//selectMaster()			
 			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
 				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
-				fmt.Println("Master: ", elev.Master)
+				selectMaster()		
+				//fmt.Println("Master: ", elev.Master)
 				//selectMaster()
 
 				if received.MessageId == Ping{ 
@@ -107,7 +108,7 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	//fmt.Println("Master: ", elev.Master)
+	fmt.Println("Master: ", elev.Master)
 }
 
 
