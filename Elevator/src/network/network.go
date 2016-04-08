@@ -12,7 +12,7 @@ import(
 )
 
 
-
+var conn map[string]bool
 var elev elevatorDriver.ElevManager
 
 func broadcastIP(IP string, chSend chan Message){
@@ -30,13 +30,15 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	//fmt.Println(selfIP)
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
-
+	//var test map[string]IP
+	conn = make(map[string]bool)
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
 	
 
 	for{
+		fmt.Println("Start of for loop")
 		select{
 		case received := <- chUDPReceive:
 			
@@ -47,10 +49,11 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
 				selectMaster()		
 				//fmt.Println("Master: ", elev.Master)
-				//selectMaster()
+				
 
 				if received.MessageId == Ping{ 
 					elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
+					
 				}
 				
 
@@ -67,7 +70,9 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			chOut <- received
 
 		case send := <-chIn:
+			fmt.Println("Sending over chUDPSend")
 			chUDPSend <- send
+			fmt.Println("Done chUDPSend")
 
 			
 		}
@@ -85,12 +90,22 @@ func ElevManagerInit() elevatorDriver.ElevManager {
 
 }
 
-func AppendConn(IP string){
-	var temp elevatorDriver.Connection
-	temp.IP = IP
-	temp.LastPing = time.Now()
 
-	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
+func AppendConn(IP string){
+
+	if _, ok := conn[IP]; ok{
+		
+	}else{
+		var temp elevatorDriver.Connection
+			temp.IP = IP
+			temp.LastPing = time.Now()
+
+			elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
+			fmt.Println("Connected elevators: ", IP)
+
+			conn[IP] = true
+ 	}
+
 }
 
 func selectMaster(){
@@ -115,7 +130,7 @@ func selectMaster(){
 
 func RemoveConn(elev int){
 	fmt.Println("Removed: ", elevatorDriver.ConnectedElevs[elev].IP)
+	delete(conn, elevatorDriver.ConnectedElevs[elev].IP)
 	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
-
 	selectMaster()
 }
