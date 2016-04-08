@@ -22,6 +22,8 @@ func broadcastIP(IP string, chSend chan Message){
 	}
 }
 
+
+
 func NetworkHandler(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
@@ -32,21 +34,28 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
+	
 
 	for{
 		select{
 		case received := <- chUDPReceive:
+			
+			added := false
+			for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+				
 
-			if received.MessageId == Ping{ //1
-				added := false
-				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
-					fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
-					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP{
-						added = true
-
-						selectMaster()
-					}
-					
+				if received.MessageId == Ping{ 
+					elevatorDriver.ConnectedElevs[elev].LastPing = time.Now()
+				}
+				fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
+				if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP{
+					added = true
+					selectMaster()
+				}
+				stillAlive := elevatorDriver.ConnectedElevs[elev]
+				if (time.Since(stillAlive.LastPing) > 900*time.Millisecond){
+					RemoveConn(elev)
+				
 				}
 				if added == false{
 					AppendConn(received.FromIP)
@@ -104,5 +113,7 @@ func selectMaster(){
 
 
 
-
-//func RemoveConn()
+func RemoveConn(elev int){
+	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
+	selectMaster()
+}
