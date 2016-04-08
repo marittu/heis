@@ -41,11 +41,11 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 		case received := <- chUDPReceive:
 			
 			AppendConn(received.FromIP)
-			selectMaster()			
+						
 			for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 
 				fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
-		
+				selectMaster()
 
 				if received.MessageId == Ping{ 
 					elevatorDriver.ConnectedElevs[elev].LastPing = time.Now()
