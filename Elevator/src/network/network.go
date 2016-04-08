@@ -41,20 +41,22 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 		case received := <- chUDPReceive:
 			
 			AppendConn(received.FromIP)
-						
-			for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+			selectMaster()			
+			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
-				fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
-				selectMaster()
+				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
+				fmt.Println("Master: ", elev.Master)
+				//selectMaster()
 
 				if received.MessageId == Ping{ 
-					elevatorDriver.ConnectedElevs[elev].LastPing = time.Now()
+					elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
 				}
 				
 
-				stillAlive := elevatorDriver.ConnectedElevs[elev]
+				stillAlive := elevatorDriver.ConnectedElevs[elevs]
 				if (time.Since(stillAlive.LastPing) > 900*time.Millisecond){
-					RemoveConn(elev)
+					fmt.Println("Removing Connection: ", stillAlive.IP)
+					RemoveConn(elevs)
 				
 				}
 				
@@ -105,12 +107,14 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	fmt.Println("Master: ", elev.Master)
+	//fmt.Println("Master: ", elev.Master)
 }
 
 
 
 func RemoveConn(elev int){
+	fmt.Println("Removed: ", elevatorDriver.ConnectedElevs[elev].IP)
 	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
+
 	selectMaster()
 }
