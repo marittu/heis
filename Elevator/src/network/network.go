@@ -32,7 +32,8 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
 	
-	conn = make(map[string]bool)
+	
+	
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
@@ -42,34 +43,35 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 		//fmt.Println("Start of for loop")
 		select{
 		case received := <- chUDPReceive:
-			
-			AppendConn(received.FromIP)
-			selectMaster()			
-			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
+			if received.MessageId == Ping{
+				AppendConn(received.FromIP)
+				selectMaster()			
+				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
-				//fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
-				
+					//fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
+					
 
-				if received.MessageId == Ping{
+					
 					if received.FromIP ==  elevatorDriver.ConnectedElevs[elevs].IP{
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
 						//fmt.Println("PING")	
 					}
+						
+						
 					
 					
-				}
-				
 
-				stillAlive := elevatorDriver.ConnectedElevs[elevs]
-				
-				if (time.Since(stillAlive.LastPing) > 5000*time.Millisecond){
-					fmt.Println("Time exceeded: ")
-					RemoveConn(elevs)
-				
-				}
-				
-				
+					stillAlive := elevatorDriver.ConnectedElevs[elevs]
+					
+					if (time.Since(stillAlive.LastPing) > 1000*time.Millisecond){
+						fmt.Println("Time exceeded: ")
+						RemoveConn(elevs)
+					
+					}
+					
+					
 
+				}
 			}
 			chOut <- received
 
@@ -85,7 +87,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 }
 
 func ElevManagerInit() elevatorDriver.ElevManager {
-
+	conn = make(map[string]bool)
 	selectMaster()
 	
 	return elev
