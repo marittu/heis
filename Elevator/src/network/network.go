@@ -19,6 +19,7 @@ func broadcastIP(IP string, chSend chan Message){
 	for{
 		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
 		time.Sleep(100*time.Millisecond)
+		
 	}
 }
 
@@ -30,7 +31,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	//fmt.Println(selfIP)
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
-	//var test map[string]IP
+	
 	conn = make(map[string]bool)
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
@@ -46,12 +47,13 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			selectMaster()			
 			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
-				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
+				//fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
 				
 
 				if received.MessageId == Ping{
 					if received.FromIP ==  elevatorDriver.ConnectedElevs[elevs].IP{
-						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()	
+						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
+						//fmt.Println("PING")	
 					}
 					
 					
@@ -60,8 +62,8 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 
 				stillAlive := elevatorDriver.ConnectedElevs[elevs]
 				
-				if (time.Since(stillAlive.LastPing) > 900*time.Millisecond){
-					fmt.Println("Removing Connection: ", stillAlive.IP)
+				if (time.Since(stillAlive.LastPing) > 5000*time.Millisecond){
+					fmt.Println("Time exceeded: ")
 					RemoveConn(elevs)
 				
 				}
@@ -96,7 +98,7 @@ func ElevManagerInit() elevatorDriver.ElevManager {
 func AppendConn(IP string){
 
 	if _, ok := conn[IP]; ok{
-		
+		//fmt.Println("IP already connected ", IP)
 	}else{
 		var temp elevatorDriver.Connection
 			temp.IP = IP
@@ -125,7 +127,7 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	fmt.Println("Master: ", elev.Master)
+	//fmt.Println("Master: ", elev.Master)
 }
 
 

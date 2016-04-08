@@ -11,7 +11,7 @@ var eInfo ElevInfo
 const (
 	//BROADCASTPORT = ":30005"
 	//PINGPORT = ":30105"
-	PORT = ":30015"
+	PORT = ":30105"
 )
 
 

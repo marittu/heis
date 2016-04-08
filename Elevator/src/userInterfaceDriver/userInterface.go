@@ -2,6 +2,7 @@ package userInterfaceDriver
 
 import (
 	"../elevatorDriver"
+	//"../queueDriver"
 	"time"
 	//"fmt"
 )
@@ -11,7 +12,7 @@ func NewOrder(chButtonPressed chan elevatorDriver.Button){
 		for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
 			for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 				pressed := elevatorDriver.ElevGetButtonSignal(button, floor)
-				if pressed == 1{
+				if ((pressed == 1) /*&& (queueDriver.MasterQueue[floor][button] != 1)*/){
 					chButtonPressed <- elevatorDriver.Button{ButtonType: button, Floor: floor} //Multiple presses registered?
 				}
 			}

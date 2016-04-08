@@ -15,13 +15,13 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Button, chGetFloor chan 
 	elevator := network.ElevManagerInit()
 	for{ 
 		select{
-		case order := <- chButtonPressed: //add case for internal order or external order
+		case order := <- chButtonPressed: //button pressed
 			if order.ButtonType == 2{ //BUTTON_INTERNAL
 				//fmt.Println("New internalOrder")
 				queueDriver.AddOrder(order)
 				queueDriver.GetDirection()
 	
-			}else{
+			}else{ //External order
 				//fmt.Println("New external order")
 				var msg network.Message
 				msg.Order = order
@@ -41,7 +41,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Button, chGetFloor chan 
 			switch(message.MessageId){
 
 			case 2: //New order
-				//fmt.Println("Fucking up when recieving message")
 				queueDriver.AddOrderMasterQueue(message.Order)
 				//queueDriver.PrintQueue()
 
