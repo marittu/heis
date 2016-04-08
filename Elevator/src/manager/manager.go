@@ -41,9 +41,9 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Button, chGetFloor chan 
 			switch(message.MessageId){
 
 			case 2: //New order
-				//fmt.Println("Adding to master queue")
+				//fmt.Println("Fucking up when recieving message")
 				queueDriver.AddOrderMasterQueue(message.Order)
-				queueDriver.PrintQueue()
+				//queueDriver.PrintQueue()
 
 			}
 		}

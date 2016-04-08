@@ -1,28 +1,19 @@
 package network
 
 import(
+
+	"../elevatorDriver"
 	"time"
 	"net"
 	"strings"
-	//"fmt"
+	"fmt"
 	"strconv"
 	
 )
 
-type Connection struct{
-	IP string
-	LastPing time.Time
-}
 
-var ConnectedElevs []Connection
 
-type elevManager struct{
-	SelfIP string
-	Elevators Connection
-	Master string  
-}
-
-var elev elevManager
+var elev elevatorDriver.ElevManager
 
 func broadcastIP(IP string, chSend chan Message){
 	for{
@@ -45,21 +36,25 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	for{
 		select{
 		case received := <- chUDPReceive:
-			added := false
-			for elev := 0; elev < len(ConnectedElevs); elev++{
-				//fmt.Println("Elevators added: ", ConnectedElevs[elev].IP)
-				if received.FromIP == ConnectedElevs[elev].IP{
-					added = true
+
+			if received.MessageId == Ping{ //1
+				added := false
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+					fmt.Println("Elevators added: ", elevatorDriver.ConnectedElevs[elev].IP)
+					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP{
+						added = true
+
+						selectMaster()
+					}
+					
 				}
-				
-			}
-			if added == false{
-				AppendConn(received.FromIP)
+				if added == false{
+					AppendConn(received.FromIP)
+
+				}
+				break 
 
 			}
-
-			selectMaster()
-
 			chOut <- received
 
 		case send := <-chIn:
@@ -71,8 +66,9 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 
 }
 
-func ElevManagerInit() elevManager {
+func ElevManagerInit() elevatorDriver.ElevManager {
 
+	selectMaster()
 	
 	return elev
 
@@ -81,29 +77,29 @@ func ElevManagerInit() elevManager {
 }
 
 func AppendConn(IP string){
-	var temp Connection
+	var temp elevatorDriver.Connection
 	temp.IP = IP
 	temp.LastPing = time.Now()
 
-	ConnectedElevs = append(ConnectedElevs, temp)
+	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 }
 
 func selectMaster(){
 	var masterIP string
 	min := 256
-	for i, _ := range ConnectedElevs{
+	for i, _ := range elevatorDriver.ConnectedElevs{
 
-	endIP, _ := strconv.Atoi(strings.Replace(ConnectedElevs[i].IP, "129.241.187.", "", -1))
+	endIP, _ := strconv.Atoi(strings.Replace(elevatorDriver.ConnectedElevs[i].IP, "129.241.187.", "", -1))
 	
 		if endIP < min{
 			min = endIP
-			masterIP = ConnectedElevs[i].IP
+			masterIP = elevatorDriver.ConnectedElevs[i].IP
 		}
 	}
 	
 	elev.Master = masterIP
 	
-	//fmt.Println("Master: ", elev.Master)
+	fmt.Println("Master: ", elev.Master)
 }
 
 

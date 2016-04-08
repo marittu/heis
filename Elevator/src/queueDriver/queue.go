@@ -29,7 +29,7 @@ func AddOrder(order elevatorDriver.Button){
 func AddOrderMasterQueue(order elevatorDriver.Button){
 	MasterQueue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
-	//sett elevsetbuttonlamp på alle heiser
+	//fmt.Println("Fucking up in AddOrderMasterQueue")
 }
 
 func EmptyQueue()bool{

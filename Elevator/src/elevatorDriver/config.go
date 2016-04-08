@@ -1,7 +1,19 @@
 package elevatorDriver
 
+import(
+	"time"
+)
+
 
 var eInfo ElevInfo
+
+
+const (
+	//BROADCASTPORT = ":30005"
+	//PINGPORT = ":30105"
+	PORT = ":30005"
+)
+
 
 const N_FLOORS  	= 	4 
 const N_BUTTONS		= 	3   
@@ -36,3 +48,15 @@ type ElevInfo struct{
 }
 
 
+type Connection struct{
+	IP string
+	LastPing time.Time
+}
+
+var ConnectedElevs []Connection
+
+type ElevManager struct{
+	SelfIP string
+	Elevators Connection
+	Master string  
+}

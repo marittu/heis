@@ -1,6 +1,7 @@
 package network //Endre pakkenavn til liten n
 
 import (
+	"../elevatorDriver"
 	"net"
 	"strings"
 	"encoding/json"
@@ -8,12 +9,8 @@ import (
 
 )
 
-const (
-	PORT = ":33795"
-)
-
 func UDPSender (chSend chan Message){
-	broadcastAddr := []string{"129.241.187.255", PORT}
+	broadcastAddr := []string{"129.241.187.255", elevatorDriver.PORT}
 	broadcastUDP, _ := net.ResolveUDPAddr("udp", strings.Join(broadcastAddr, ""))
 	broadcastConn, _ := net.DialUDP("udp", nil, broadcastUDP)
 	defer broadcastConn.Close()
@@ -28,7 +25,7 @@ func UDPSender (chSend chan Message){
 }
 
 func UDPListener(chReceive chan Message){
-	UDPReceiveAddr, err := net.ResolveUDPAddr("udp", PORT)
+	UDPReceiveAddr, err := net.ResolveUDPAddr("udp", elevatorDriver.PORT)
 	if err != nil{
 		fmt.Println(err)
 	}
