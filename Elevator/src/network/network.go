@@ -47,8 +47,6 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
 				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
-				//selectMaster()		
-				fmt.Println("Master: ", elev.Master)
 				
 
 				if received.MessageId == Ping{
@@ -127,7 +125,7 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	//fmt.Println("Master: ", elev.Master)
+	fmt.Println("Master: ", elev.Master)
 }
 
 
