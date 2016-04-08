@@ -38,26 +38,30 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	
 
 	for{
-		fmt.Println("Start of for loop")
+		//fmt.Println("Start of for loop")
 		select{
 		case received := <- chUDPReceive:
 			
 			AppendConn(received.FromIP)
-			//selectMaster()			
+			selectMaster()			
 			for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
 
 				fmt.Println("Connected elevators: ", elevatorDriver.ConnectedElevs[elevs].IP)
-				selectMaster()		
-				//fmt.Println("Master: ", elev.Master)
+				//selectMaster()		
+				fmt.Println("Master: ", elev.Master)
 				
 
-				if received.MessageId == Ping{ 
-					elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
+				if received.MessageId == Ping{
+					if received.FromIP ==  elevatorDriver.ConnectedElevs[elevs].IP{
+						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()	
+					}
+					
 					
 				}
 				
 
 				stillAlive := elevatorDriver.ConnectedElevs[elevs]
+				
 				if (time.Since(stillAlive.LastPing) > 900*time.Millisecond){
 					fmt.Println("Removing Connection: ", stillAlive.IP)
 					RemoveConn(elevs)
@@ -123,7 +127,7 @@ func selectMaster(){
 	
 	elev.Master = masterIP
 	
-	fmt.Println("Master: ", elev.Master)
+	//fmt.Println("Master: ", elev.Master)
 }
 
 
