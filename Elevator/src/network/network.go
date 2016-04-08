@@ -74,9 +74,9 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			chOut <- received
 
 		case send := <-chIn:
-			fmt.Println("Sending over chUDPSend")
+			//fmt.Println("Sending over chUDPSend")
 			chUDPSend <- send
-			fmt.Println("Done chUDPSend")
+			//fmt.Println("Done chUDPSend")
 
 			
 		}
