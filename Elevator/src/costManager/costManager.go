@@ -43,6 +43,7 @@ func GetOwnCost(order elevatorDriver.Order) int{
 
 		//cost = getCostForOrder(order. elevatorDriver.Order)	
 	}
+	cost = 5
 	return cost
 }
 
