@@ -6,9 +6,9 @@ import (
 	"../queueDriver"
 	"../network"
 	"../costManager"
-	//"fmt"
-	"net"
-	"strings"
+	"fmt"
+	//"net"
+	//"strings"
 	//"time"
 )
 
@@ -16,8 +16,8 @@ import (
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	elevator := network.GetElevManager()
-	addr, _ := net.InterfaceAddrs()
-	SelfIP := strings.Split(addr[1].String(),"/")[0]
+	/*addr, _ := net.InterfaceAddrs()
+	SelfIP := strings.Split(addr[1].String(),"/")[0]*/
 	for{ 
 		select{
 		case order := <- chButtonPressed: //button pressed
@@ -29,16 +29,20 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 	
 			}else{ //External order
 				//target := costManager.GetTargetElev(order, elevator.SelfIP)
-				cost := costManager.GetOwnCost(order)
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+					cost := costManager.GetOwnCost(order)
 
-				//network.SendNetworkMessage(cost, elevator.SelfIP, elevator.Master, network.NewOrder, chToNetwork)
-				var msg network.Message
-				msg.Cost = cost
-				msg.ToIP = elevator.Master
-				msg.FromIP = SelfIP
-				msg.MessageId = network.NewOrder
+					//network.SendNetworkMessage(cost, elevator.SelfIP, elevator.Master, network.NewOrder, chToNetwork)
+					var msg network.Message
+					msg.Cost = cost
+					msg.ToIP = elevator.Master
+					msg.FromIP = elevatorDriver.ConnectedElevs[elev].IP
+					msg.MessageId = network.NewOrder
 
-				chToNetwork <- msg
+					chToNetwork <- msg
+
+					fmt.Println("Elevator: ", msg.FromIP, " cost: ", cost)
+				}
 			}
 			
 			break
@@ -52,11 +56,12 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			case 2: //New order
 
 				queueDriver.AddOrderMasterQueue(message.Order)
+				network.AppendCost(message.FromIP, message.Cost)
 
-				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+				/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 
-					network.AppendCost(elevatorDriver.ConnectedElevs[elev].IP, message.Cost)
-				}	
+					
+				}*/	
 
 				//target := costManager.GetTargetElev()
 				
