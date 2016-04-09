@@ -1,6 +1,7 @@
 package elevatorDriver
 
 import(
+
 	"time"
 )
 
@@ -9,7 +10,7 @@ var eInfo ElevInfo
 
 
 const (
-	PORT = ":30105"
+	PORT = ":39843"
 )
 
 
@@ -35,11 +36,6 @@ type Order struct{
 	Floor int
 }
 
-type ElevStatus struct {
-	Dir ElevMotorDirection
-	LastFloor int
-}
-
 type ElevInfo struct{
 	Dir int
 	CurrentFloor int
@@ -54,7 +50,8 @@ type Connection struct{
 var ConnectedElevs []Connection
 
 type ElevManager struct{
-	SelfIP string
-	Elevators Connection
+	SelfIP string //IP dobbelt opp - fjern SelfIP
+	//Elevators Connection
 	Master string  
+	
 }

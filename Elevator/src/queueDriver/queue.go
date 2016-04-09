@@ -24,6 +24,8 @@ func QueueInit(){
 func AddOrder(order elevatorDriver.Order){
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
+	
+
 }
 
 func AddOrderMasterQueue(order elevatorDriver.Order){
@@ -71,7 +73,7 @@ func DeleteOrder(floor int){
 				Queue[floor][button] = 0
 				MasterQueue[floor][button] = 0
 		}
-		elevatorDriver.ElevSetButtonLamp(floor,button,0)
+		elevatorDriver.ElevSetButtonLamp(floor,button,0) //send lights over network
 	}
 }
 
@@ -90,11 +92,11 @@ func setCurrentFloor(floor int){
 	Info.CurrentFloor = floor    
 }
 
-func getCurrentFloor() int{
+func GetCurrentFloor() int{
 	return Info.CurrentFloor
 }
 
-func getDir()int{
+func GetDir()int{
 	return Info.Dir
 }
 
@@ -106,7 +108,7 @@ func setDir(dir int){
 func PassingFloor(floor int){ 
 	setCurrentFloor(floor)
 	elevatorDriver.ElevSetFloorIndicator(floor)
-	dir := getDir()
+	dir := GetDir()
 
 	if EmptyQueue() == true{
 		elevatorDriver.ElevDrive(0)
@@ -135,8 +137,8 @@ func PassingFloor(floor int){
 
 func GetDirection(){
 	
-	currentDir := getDir()
-	currentFloor := getCurrentFloor()		
+	currentDir := GetDir()
+	currentFloor := GetCurrentFloor()		
 	if EmptyQueue() == true{
 		setDir(0)
 		

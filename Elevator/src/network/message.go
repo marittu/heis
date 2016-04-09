@@ -7,7 +7,8 @@ import (
 const( //type of network message
 	Ping = 1
 	NewOrder = 2
-	MasterDistributesOrder = 3
+	//MasterDistributesOrder = 3
+	Cost = 3
 	
 )
 
@@ -16,5 +17,6 @@ type Message struct{
 	FromIP string
 	ToIP string
 	Order elevatorDriver.Order
+	Cost int
 	
 }
