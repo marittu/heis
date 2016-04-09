@@ -72,15 +72,23 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 					
 				}
 			}
+
+			if received.MessageId == NewOrder{
+				fmt.Println("Broscasting")
+				go BroadcastCost(SelfIP, received.Order, chUDPSend)
+			}
 			
 			if received.MessageId == Cost{
 				
 				AppendCost(received.FromIP, received.Cost)
-			}
+				if len(cost) == len(elevatorDriver.ConnectedElevs){
+					chOut <- Message{FromIP: "", MessageId: FindTarget, ToIP: elev.Master}
+				}
 
-			if received.MessageId == NewOrder{
-				go BroadcastCost(SelfIP, received.Order, chUDPSend)
 			}
+			break
+
+			
 				
 			chOut <- received
 
@@ -130,6 +138,20 @@ func AppendCost(IP string, ownCost int){
 			
  	}
  	
+
+}
+
+func GetMinCost() string{
+	min := 1000
+	var ideal string
+	for IP, minCost := range cost{
+		if minCost < min{
+			ideal = IP
+			min = minCost
+		}
+	}
+	//fmt.Println("Ideal: ", ideal)
+	return ideal
 
 }
 
