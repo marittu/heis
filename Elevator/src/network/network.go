@@ -14,9 +14,9 @@ import(
 
 var SELFIP string
 var conn map[string]bool
-var cost map[string]bool
+var cost = make(map[string]bool)
 var elev elevatorDriver.ElevManager
-
+//cost = make(map[string]bool)
 func broadcastIP(IP string, chSend chan Message){
 	for{
 		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
@@ -39,7 +39,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	
 	conn = make(map[string]bool)
-	cost = make(map[string]bool)
+	
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
 	//ownCost := costManager.GetOwnCost()
