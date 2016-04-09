@@ -3,7 +3,7 @@ package network
 import(
 
 	"../elevatorDriver"
-	//"../costManager"
+	"../costManager"
 	"time"
 	"net"
 	"strings"
@@ -25,6 +25,15 @@ func broadcastIP(IP string, chSend chan Message){
 	}
 }
 
+func BroadcastCost(IP string, order elevatorDriver.Order, chSend chan Message){
+	
+	cost := costManager.GetOwnCost(order)
+	for{
+		chSend <- Message{FromIP: IP, MessageId: Cost, Cost: cost, ToIP: ""}
+		time.Sleep(100*time.Millisecond)
+		
+	}
+}
 
 func NetworkHandler(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
@@ -38,6 +47,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
+	
 	
 
 	for{
@@ -62,21 +72,15 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 					
 				}
 			}
-			/*
+			
 			if received.MessageId == Cost{
 				
-				//target := GetTargetElevator(cost) //delet costs after target selected
+				AppendCost(received.FromIP, received.Cost)
+			}
 
-			}*/
-
-			/*if received.MessageId == NewOrder{
-				fmt.Println("IP ", received.FromIP)
-				for len(cost) < len(elevatorDriver.ConnectedElevs){
-					ownCost := costManager.GetOwnCost(received.Order)
-					fmt.Println("IP ", received.FromIP)
-					//appendCost(received.FromIP, received.Cost)	
-				}
-			}*/
+			if received.MessageId == NewOrder{
+				go BroadcastCost(SelfIP, received.Order, chUDPSend)
+			}
 				
 			chOut <- received
 

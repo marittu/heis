@@ -5,10 +5,10 @@ import (
 	"../elevatorDriver"
 	"../queueDriver"
 	"../network"
-	"../costManager"
+	//"../costManager"
 	//"fmt"
-	//"net"
-	//"strings"
+	"net"
+	"strings"
 	//"time"
 )
 
@@ -16,8 +16,8 @@ import (
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	elevator := network.GetElevManager()
-	/*addr, _ := net.InterfaceAddrs()
-	SelfIP := strings.Split(addr[1].String(),"/")[0]*/
+	addr, _ := net.InterfaceAddrs()
+	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	for{ 
 		select{
 		case order := <- chButtonPressed: //button pressed
@@ -30,20 +30,34 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			}else{ //External order
 
 				queueDriver.AddOrderMasterQueue(order)
+
+				//network.BroadcastCost()
+				//network.SendNetworkMessage(cost, elevator.SelfIP, elevator.Master, network.NewOrder, chToNetwork)
+				var msg network.Message
+				msg.Order = order
+				msg.ToIP = elevator.Master
+				msg.FromIP = SelfIP
+				msg.MessageId = network.NewOrder
+
+
+				chToNetwork <- msg
+					
 				//target := costManager.GetTargetElev(order, elevator.SelfIP)
-				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+				/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 					cost := costManager.GetOwnCost(order)
+
 
 					//network.SendNetworkMessage(cost, elevator.SelfIP, elevator.Master, network.NewOrder, chToNetwork)
 					var msg network.Message
-					msg.Cost = cost
+					msg.Cost = elev//cost
 					msg.ToIP = elevator.Master
 					msg.FromIP = elevatorDriver.ConnectedElevs[elev].IP
 					msg.MessageId = network.NewOrder
 
+
 					chToNetwork <- msg
 					
-				}
+				}*/
 			}
 			
 			break
@@ -56,7 +70,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case 2: //New order
 
-				network.AppendCost(message.FromIP, message.Cost)
+				//network.AppendCost(message.FromIP, message.Cost)
 					//fmt.Println("Sending")
 				//fmt.Println("Elevator: ", message.FromIP, " cost: ", message.Cost)
 
