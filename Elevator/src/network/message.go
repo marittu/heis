@@ -15,6 +15,6 @@ type Message struct{
 	MessageId int
 	FromIP string
 	ToIP string
-	Order elevatorDriver.Button
+	Order elevatorDriver.Order
 	
 }

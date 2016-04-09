@@ -21,15 +21,15 @@ func QueueInit(){
 	MasterQueue = Queue
 }
 
-func AddOrder(order elevatorDriver.Button){
+func AddOrder(order elevatorDriver.Order){
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
 }
 
-func AddOrderMasterQueue(order elevatorDriver.Button){
+func AddOrderMasterQueue(order elevatorDriver.Order){
 	MasterQueue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
-	//fmt.Println("Fucking up in AddOrderMasterQueue")
+
 }
 
 func EmptyQueue()bool{
@@ -67,11 +67,12 @@ func OrderBelow(floor int)bool{
 
 func DeleteOrder(floor int){
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++{
-			if Queue[floor][button] == 1{
+		if Queue[floor][button] == 1{
 				Queue[floor][button] = 0
-				elevatorDriver.ElevSetButtonLamp(floor,button,0)
-			}
+				MasterQueue[floor][button] = 0
 		}
+		elevatorDriver.ElevSetButtonLamp(floor,button,0)
+	}
 }
 
 func openDoor(floor int){

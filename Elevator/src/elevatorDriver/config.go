@@ -9,8 +9,6 @@ var eInfo ElevInfo
 
 
 const (
-	//BROADCASTPORT = ":30005"
-	//PINGPORT = ":30105"
 	PORT = ":30105"
 )
 
@@ -32,7 +30,7 @@ const (
 	DIR_STOP = 0
 )
 
-type Button struct{  
+type Order struct{  
 	ButtonType ElevButtonType
 	Floor int
 }

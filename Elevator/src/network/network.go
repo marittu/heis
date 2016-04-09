@@ -55,7 +55,6 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 					
 					if (time.Since(stillAlive.LastPing) > 1000*time.Millisecond){
-						fmt.Println("Time exceeded: ")
 						RemoveConn(elevs)
 					
 					}

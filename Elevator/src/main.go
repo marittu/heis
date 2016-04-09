@@ -11,7 +11,7 @@ import (
 	
 )
 
-var chButtonPressed = make(chan elevatorDriver.Button)
+var chButtonPressed = make(chan elevatorDriver.Order)
 var chGetFloor = make(chan int)
 var chToNetwork = make(chan network.Message, 100)
 var chFromNetwork = make(chan network.Message, 100)
