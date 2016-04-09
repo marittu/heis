@@ -50,24 +50,20 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			switch(message.MessageId){
 
 			case 2: //New order
-				//fmt.Println("IP ", message.FromIP)
-				//ownCost := costManager.GetOwnCost(message.Order)
-				//fmt.Println("self ", SelfIP)
-				network.AppendCost(message.FromIP)	
-				//fmt.Println("Cost: ", message.Cost)
-				/*for len(cost) < len(elevatorDriver.ConnectedElevs){
-					
-				}*/
-			
+
 				queueDriver.AddOrderMasterQueue(message.Order)
-				//cost := costManager.GetOwnCost(message.Order) 
-				//network.sendNetworkMessage(order, elevator.SelfIP, elevator.Master, network.Cost,  chToNetwork)
-				//fmt.Println("Target: ", target)
-				//queueDriver.PrintQueue()
+
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+
+					network.AppendCost(elevatorDriver.ConnectedElevs[elev].IP, message.Cost)
+				}	
+
+				//target := costManager.GetTargetElev()
+				
 			
 			
-			//case 3: //Master finds target elev
-				//costManager.FindTarget()
+			//case 3: //Master sends order to target elev
+				
 			}
 		}
 	}

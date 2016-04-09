@@ -14,7 +14,7 @@ import(
 
 var SELFIP string
 var conn map[string]bool
-var cost = make(map[string]bool)
+var cost = make(map[string]int)
 var elev elevatorDriver.ElevManager
 //cost = make(map[string]bool)
 func broadcastIP(IP string, chSend chan Message){
@@ -24,14 +24,6 @@ func broadcastIP(IP string, chSend chan Message){
 		
 	}
 }
-/*
-func broadcastCost(IP string, cost int, chSend chan Message){
-	for{
-		chSend <- Message{FromIP: IP, MessageId: Cost, ToIP: "", Cost = cost}
-		time.Sleep(100*time.Millisecond)
-	}
-}*/
-
 
 
 func NetworkHandler(chIn chan Message, chOut chan Message){ 
@@ -124,12 +116,13 @@ func appendConn(IP string){
 
 }
 
-func AppendCost(IP string){
+func AppendCost(IP string, ownCost int){
 	if _, ok := cost[IP]; ok{
 		//cost already addded
 	}else{
-		cost[IP] = true
-		fmt.Println("Cost added: ", IP)
+		//cost = append(IP, cost)
+		cost[IP] = ownCost
+		fmt.Println("Cost added: ", IP, " cost: ", ownCost)
 			
  	}
  	
