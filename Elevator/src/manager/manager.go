@@ -5,8 +5,8 @@ import (
 	"../elevatorDriver"
 	"../queueDriver"
 	"../network"
-	"../costManager"
-	"fmt"
+	//"../costManager"
+	//"fmt"
 	//"net"
 	//"strings"
 	//"time"
@@ -30,18 +30,19 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			}else{ //External order
 				//target := costManager.GetTargetElev(order, elevator.SelfIP)
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
-					cost := costManager.GetOwnCost(order)
+				//	cost := costManager.GetOwnCost(order)
 
 					//network.SendNetworkMessage(cost, elevator.SelfIP, elevator.Master, network.NewOrder, chToNetwork)
 					var msg network.Message
-					msg.Cost = cost
+					msg.Cost = elev
 					msg.ToIP = elevator.Master
 					msg.FromIP = elevatorDriver.ConnectedElevs[elev].IP
 					msg.MessageId = network.NewOrder
 
 					chToNetwork <- msg
+					network.AppendCost(message.FromIP, message.Cost)
 
-					fmt.Println("Elevator: ", msg.FromIP, " cost: ", cost)
+					//fmt.Println("Elevator: ", msg.FromIP, " cost: ", cost)
 				}
 			}
 			
@@ -56,8 +57,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			case 2: //New order
 
 				queueDriver.AddOrderMasterQueue(message.Order)
-				network.AppendCost(message.FromIP, message.Cost)
-
+				
 				/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 
 					
