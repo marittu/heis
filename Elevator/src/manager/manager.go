@@ -40,7 +40,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					msg.MessageId = network.NewOrder
 
 					chToNetwork <- msg
-					network.AppendCost(message.FromIP, message.Cost)
+					network.AppendCost(msg.FromIP, msg.Cost)
 
 					//fmt.Println("Elevator: ", msg.FromIP, " cost: ", cost)
 				}
