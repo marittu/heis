@@ -53,7 +53,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				//fmt.Println("IP ", message.FromIP)
 				//ownCost := costManager.GetOwnCost(message.Order)
 				//fmt.Println("self ", SelfIP)
-				network.AppendCost(SelfIP)	
+				network.AppendCost(message.FromIP)	
 				//fmt.Println("Cost: ", message.Cost)
 				/*for len(cost) < len(elevatorDriver.ConnectedElevs){
 					
