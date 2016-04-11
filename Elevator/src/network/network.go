@@ -117,6 +117,7 @@ func appendConn(IP string){
 		var temp elevatorDriver.Connection
 			temp.IP = IP
 			temp.LastPing = time.Now()
+			temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal()
 			//SelfIP = IP
 			
 			elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
