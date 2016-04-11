@@ -30,7 +30,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			if order.ButtonType == 2{ //BUTTON_INTERNAL 
 				
 				queueDriver.AddOrder(order) // , SelfIP
-				queueDriver.GetDirection(SelfIP)
+				queueDriver.GetDirection(SelfIP, chToNetwork)
 
 
 				var temp elevatorDriver.ElevInfo
@@ -45,11 +45,9 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				
 				chToNetwork <- msg
 				
-				//break	
 			}else{ //External order
 				
 				queueDriver.AddOrderMasterQueue(order)
-				//fmt.Println("Order recieved")
 				var msg network.Message
 				msg.Order = order
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
@@ -58,17 +56,32 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			
 				chToNetwork <- msg
 				
-				
-				//break
 			}
 			
 			break
 		
 		case floor := <- chGetFloor:
 			fmt.Println("Recieved from floor channel")
-			queueDriver.PassingFloor(floor, SelfIP)
+			queueDriver.PassingFloor(floor, SelfIP, chToNetwork)
 			break
 		
+		/*case floor := <- chDoorOpen:
+			fmt.Println("Kommer hit?")
+			
+			var temp elevatorDriver.ElevInfo
+			temp.Dir = 0
+			temp.CurrentFloor = floor
+			var msg network.Message
+			msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
+			msg.Info = temp
+			msg.MessageId = network.Ack
+				
+			chToNetwork <- msg
+			fmt.Println("Stuck?")
+
+			break*/
+
+
 		case message := <-chFromNetwork:
 			
 			switch(message.MessageId){
@@ -76,6 +89,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			case network.NewOrder:
 				
 				if SelfIP == message.ToIP{ //if master
+					
 					target := costManager.GetTargetElevator(message.Order)
 					fmt.Println("target", target)
 					var msg network.Message
@@ -88,16 +102,18 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				}
 
 			case network.OrderFromMaster:
-				if SelfIP == message.ToIP{
+				if SelfIP == message.ToIP{ //if master
 					fmt.Println("Order to: ", message.ToIP)
 					queueDriver.AddOrder(message.Order)
 					queueDriver.PrintQueue()
-					queueDriver.GetDirection(SelfIP)
-					//queueDriver.PassingFloor(floor, SelfIP)
+					queueDriver.GetDirection(SelfIP, chToNetwork)
 					break
 				}
 				
-			
+			case network.Ack:
+				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++{
+					elevatorDriver.ElevSetButtonLamp(message.Info.CurrentFloor,button,0) 	
+				}		
 
 								
 			}

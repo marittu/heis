@@ -2,6 +2,7 @@ package queueDriver
 
 import (
 	"../elevatorDriver"
+	"../network"
 	"fmt"
 	"time"
 )
@@ -71,23 +72,37 @@ func DeleteOrder(floor int, selfIP string){
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++{
 		
 		Queue[floor][button] = 0
-		MasterQueue[floor][button] = 0
+		//MasterQueue[floor][button] = 0
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 			if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
 				elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] = 0
+				elevatorDriver.ElevSetButtonLamp(floor,button,0) 
 			}
 		}
 		
-		elevatorDriver.ElevSetButtonLamp(floor,button,0) //send lights over network
-	}
+		
+	}	
 }
 
-func openDoor(floor int, selfIP string){
+
+
+func openDoor(floor int, selfIP string, chToNetwork chan network.Message){
+	
+		
 	DeleteOrder(floor, selfIP)
 	elevatorDriver.ElevSetDoorOpenLamp(1)
 	time.Sleep(2*time.Second)
 	elevatorDriver.ElevSetDoorOpenLamp(0)
-	GetDirection(selfIP)
+	var temp elevatorDriver.ElevInfo
+	temp.Dir = 0
+	temp.CurrentFloor = floor
+	var msg network.Message
+	msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
+	msg.Info = temp
+	msg.MessageId = network.Ack
+			
+	chToNetwork <- msg
+	GetDirection(selfIP, chToNetwork)
 	//printQueue()
 
 
@@ -122,7 +137,7 @@ func setDir(dir int, selfIP string){
 	
 }
 
-func PassingFloor(floor int, selfIP string){ 
+func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message){ 
 	setCurrentFloor(floor, selfIP)
 	fmt.Println("selfIP: ", selfIP)
 	fmt.Println("CurrentFloor: ", floor)
@@ -137,32 +152,32 @@ func PassingFloor(floor int, selfIP string){
 		if Queue[floor][2] == 1{ //internal order
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor, selfIP)	
+			openDoor(floor, selfIP, chToNetwork)	
 
 		}else if (dir == 1 && Queue[floor][0] == 1){ //order up, dir up
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor, selfIP)
+			openDoor(floor, selfIP, chToNetwork)
 			
 		}else if (dir == -1 && Queue[floor][1] == 1){ //order down dir down
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor, selfIP)
+			openDoor(floor, selfIP, chToNetwork)
 		}else if dir == 1 && Queue[floor][1] == 1{//order down going up
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor, selfIP)
+			openDoor(floor, selfIP, chToNetwork)
 		}else if dir == -1 && Queue[floor][0] == 1{//order up going down
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor, selfIP)
+			openDoor(floor, selfIP, chToNetwork)
 		}		
 
 	}
 	
 }
 
-func GetDirection(selfIP string){
+func GetDirection(selfIP string, chToNetwork chan network.Message){
 	
 	currentDir := GetDir()
 	currentFloor := GetCurrentFloor()		
@@ -183,7 +198,7 @@ func GetDirection(selfIP string){
 							setDir(-1, selfIP)
 							elevatorDriver.ElevDrive(-1)
 						}else if floor == currentFloor{
-							openDoor(floor, selfIP)
+							openDoor(floor, selfIP, chToNetwork)
 						}
 
 					}
