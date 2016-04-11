@@ -72,15 +72,25 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				
 				if SelfIP == message.ToIP{ //if master
 					target := costManager.GetTargetElevator(message.Order)
-					fmt.Println("target", target)	
+					fmt.Println("target", target)
+					var msg network.Message
+					msg.Order = message.Order
+					msg.ToIP = target
+					msg.FromIP = SelfIP //master
+					msg.MessageId = network.OrderFromMaster
+
+					chToNetwork <- msg	
 				}
 
-			/*case network.NewInternalOrder:
+			case network.OrderFromMaster:
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 					if elevatorDriver.ConnectedElevs[elev].IP == message.FromIP{
+						queueDriver.AddOrder(message.Order)
+						queueDriver.GetDirection(SelfIP)
+
 					}
 				}
-			*/
+			
 
 								
 			}
