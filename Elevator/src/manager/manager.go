@@ -15,7 +15,7 @@ import (
 
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
-	elevator := network.GetElevManager()
+	//elevator := network.GetElevManager()
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	for{ 
@@ -33,7 +33,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				fmt.Println("Order recieved")
 				var msg network.Message
 				msg.Order = order
-				msg.ToIP = elevator.Master
+				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
 				msg.FromIP = SelfIP
 				msg.MessageId = network.NewOrder
 
@@ -50,7 +50,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			switch(message.MessageId){
 
 
-
+				/*
 			case 4: //Find target
 				if SelfIP == message.ToIP{
 					target := network.GetMinCost()
@@ -65,7 +65,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					//fmt.Println("send done")
 	
 				}
-				
+				*/
 				//network.AppendCost(message.FromIP, message.Cost)
 					//fmt.Println("Sending")
 				//fmt.Println("Elevator: ", message.FromIP, " cost: ", message.Cost)
@@ -80,7 +80,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				//target := costManager.GetTargetElev()
 				
 			
-			
+			/*
 			case 5: //Target adds order from master
 				//fmt.Println("in add order case")
 				if SelfIP == message.ToIP{
@@ -88,7 +88,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					queueDriver.AddOrder(message.Order)
 					queueDriver.GetDirection()
 				}
-				
+			*/	
 			}
 		}
 	}

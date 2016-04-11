@@ -3,7 +3,7 @@ package network
 import(
 
 	"../elevatorDriver"
-	"../costManager"
+	//"../costManager"
 	"time"
 	"net"
 	"strings"
@@ -12,10 +12,10 @@ import(
 	
 )
 
-var SELFIP string
+//var SELFIP string
 var conn map[string]bool
-var cost = make(map[string]int)
-var elev elevatorDriver.ElevManager
+//var cost = make(map[string]int)
+//var elev elevatorDriver.ElevManager
 //cost = make(map[string]bool)
 func broadcastIP(IP string, chSend chan Message){
 	for{
@@ -24,7 +24,7 @@ func broadcastIP(IP string, chSend chan Message){
 		
 	}
 }
-
+/*
 func BroadcastCost(IP string, order elevatorDriver.Order, chSend chan Message){
 	
 	cost := costManager.GetOwnCost(order)
@@ -34,7 +34,7 @@ func BroadcastCost(IP string, order elevatorDriver.Order, chSend chan Message){
 		
 	}
 }
-
+*/
 func NetworkHandler(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
@@ -73,7 +73,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 				}
 			}
 
-			if received.MessageId == NewOrder{
+		/*	if received.MessageId == NewOrder{
 				fmt.Println("Broscasting")
 				go BroadcastCost(SelfIP, received.Order, chUDPSend)
 			}
@@ -86,7 +86,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 				}
 
 			}
-			break
+		*/	break
 
 			
 				
@@ -101,13 +101,13 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	}
 
 }
-
+/*
 func GetElevManager() elevatorDriver.ElevManager {
 	
 	return elev
 
 }
-
+*/
 
 func appendConn(IP string){
 
@@ -117,7 +117,7 @@ func appendConn(IP string){
 		var temp elevatorDriver.Connection
 			temp.IP = IP
 			temp.LastPing = time.Now()
-			elev.SelfIP = IP
+			//SelfIP = IP
 			
 			elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 			fmt.Println("Connected elevator: ", IP)
@@ -127,7 +127,7 @@ func appendConn(IP string){
  	}
 
 }
-
+/*
 func AppendCost(IP string, ownCost int){
 	if _, ok := cost[IP]; ok{
 		//cost already addded
@@ -154,7 +154,7 @@ func GetMinCost() string{
 	return ideal
 
 }
-
+*/
 func selectMaster(){
 	var masterIP string
 	min := 256
@@ -167,10 +167,12 @@ func selectMaster(){
 			masterIP = elevatorDriver.ConnectedElevs[i].IP
 		}
 	}
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+		elevatorDriver.ConnectedElevs[elev].Master = masterIP	
+	}
 	
-	elev.Master = masterIP
 	
-	fmt.Println("Master: ", elev.Master)
+	fmt.Println("Master: ", masterIP)
 }
 
 

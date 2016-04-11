@@ -45,13 +45,17 @@ type ElevInfo struct{
 type Connection struct{
 	IP string
 	LastPing time.Time
+	Master string 
+	OwnQueue [N_FLOORS][N_BUTTONS]int
+	Info ElevInfo
 }
 
 var ConnectedElevs []Connection
 
+/*
 type ElevManager struct{
 	SelfIP string //IP dobbelt opp - fjern SelfIP
 	//Elevators Connection
 	Master string  
 	
-}
+}*/
