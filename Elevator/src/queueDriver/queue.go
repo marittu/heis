@@ -148,11 +148,11 @@ func PassingFloor(floor int, selfIP string){
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
-		}else if dir == 1 && Queue[3][1] == 1{//order down at fourth floor 
+		}else if dir == 1 && Queue[floor][1] == 1{//order down going up
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
-		}else if dir == -1 && Queue[0][0] == 1{//order up at first floor
+		}else if dir == -1 && Queue[floor][0] == 1{//order up going down
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
