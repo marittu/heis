@@ -7,8 +7,8 @@ import (
 	"../network"
 	//"../costManager"
 	"fmt"
-	//"net"
-	//"strings"
+	"net"
+	"strings"
 	//"time"
 )
 
@@ -16,17 +16,17 @@ import (
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	//elevator := network.GetElevManager()
-	//addr, _ := net.InterfaceAddrs()
-	//SelfIP := strings.Split(addr[1].String(),"/")[0]
+	addr, _ := net.InterfaceAddrs()
+	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	for{ 
 		select{
 		case order := <- chButtonPressed: //button pressed
 
 
 			if order.ButtonType == 2{ //BUTTON_INTERNAL
-				queueDriver.AddOrder(order)
-				queueDriver.GetDirection()
-	
+				queueDriver.AddOrder(order, SelfIP)
+				queueDriver.GetDirection(SelfIP)
+				
 			}else{ //External order
 
 				
@@ -43,7 +43,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			
 			break
 		case floor := <- chGetFloor:
-			queueDriver.PassingFloor(floor)
+			queueDriver.PassingFloor(floor, SelfIP)
 			break
 		case message := <-chFromNetwork:
 			

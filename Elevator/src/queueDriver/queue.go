@@ -21,9 +21,23 @@ func QueueInit(){
 	MasterQueue = Queue
 }
 
-func AddOrder(order elevatorDriver.Order){
+func AddOrder(order elevatorDriver.Order, selfIP string){
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+		if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
+			elevatorDriver.ConnectedElevs[elev].OwnQueue[order.Floor][order.ButtonType] = 1
+			elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
+			/*for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
+					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+						fmt.Print(elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button])
+					} 
+					fmt.Println()
+			}
+			fmt.Println()
+			*/	
+		}
+	}
 	Queue[order.Floor][order.ButtonType] = 1
-	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
+	
 	
 
 }
@@ -67,22 +81,27 @@ func OrderBelow(floor int)bool{
 	return false
 }
 
-func DeleteOrder(floor int){
+func DeleteOrder(floor int, selfIP string){
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++{
-		if Queue[floor][button] == 1{
-				Queue[floor][button] = 0
-				MasterQueue[floor][button] = 0
+		
+		Queue[floor][button] = 0
+		MasterQueue[floor][button] = 0
+		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+			if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
+				elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] = 0
+			}
 		}
+		
 		elevatorDriver.ElevSetButtonLamp(floor,button,0) //send lights over network
 	}
 }
 
-func openDoor(floor int){
-	DeleteOrder(floor)
+func openDoor(floor int, selfIP string){
+	DeleteOrder(floor, selfIP)
 	elevatorDriver.ElevSetDoorOpenLamp(1)
 	time.Sleep(2*time.Second)
 	elevatorDriver.ElevSetDoorOpenLamp(0)
-	GetDirection()
+	GetDirection(selfIP)
 	//printQueue()
 
 
@@ -105,7 +124,7 @@ func setDir(dir int){
 	
 }
 
-func PassingFloor(floor int){ 
+func PassingFloor(floor int, selfIP string){ 
 	setCurrentFloor(floor)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
@@ -118,24 +137,24 @@ func PassingFloor(floor int){
 		if Queue[floor][2] == 1{
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor)	
+			openDoor(floor, selfIP)	
 
 		}else if (dir == 1 && Queue[floor][0] == 1){
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor)
+			openDoor(floor, selfIP)
 			
 		}else if (dir == -1 && Queue[floor][1] == 1){
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
-			openDoor(floor)
+			openDoor(floor, selfIP)
 			
 		}	
 	}
 	
 }
 
-func GetDirection(){
+func GetDirection(selfIP string){
 	
 	currentDir := GetDir()
 	currentFloor := GetCurrentFloor()		
@@ -156,7 +175,7 @@ func GetDirection(){
 							setDir(-1)
 							elevatorDriver.ElevDrive(-1)
 						}else if floor == currentFloor{
-							openDoor(floor)
+							openDoor(floor, selfIP)
 						}
 
 					}
