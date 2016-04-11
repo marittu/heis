@@ -23,9 +23,14 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 		case order := <- chButtonPressed: //button pressed
 
 
-			if order.ButtonType == 2{ //BUTTON_INTERNAL
-				queueDriver.AddOrder(order, SelfIP)
+			if order.ButtonType == 2{ //BUTTON_INTERNAL 
+				queueDriver.AddOrder(order) // , SelfIP
 				queueDriver.GetDirection(SelfIP)
+				var msg network.Message
+				msg.Order = order
+				msg.FromIP = SelfIP
+
+				msg.MessageId = network.NewInternalOrder
 				
 			}else{ //External order
 
@@ -34,7 +39,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				var msg network.Message
 				msg.Order = order
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
-				//msg.FromIP = SelfIP
+				msg.FromIP = SelfIP
 				msg.MessageId = network.NewOrder
 
 				chToNetwork <- msg
@@ -55,7 +60,16 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					target := costManager.GetTargetElevator(message.Order)
 					fmt.Println("target", target)	
 				}
-				
+
+			case network.NewInternalOrder:
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+					if elevatorDriver.ConnectedElevs[elev].IP == message.FromIP{
+						elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 1
+					}
+				}
+
+
+								
 			}
 		}
 	}

@@ -11,6 +11,7 @@ const( //type of network message
 	//FindTarget = 4
 	//MasterDistributesOrder = 5
 	OrderFromMaster = 3
+	NewInternalOrder = 5
 	Ack = 4
 	
 )

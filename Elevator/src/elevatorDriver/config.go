@@ -51,11 +51,3 @@ type Connection struct{
 }
 
 var ConnectedElevs []Connection
-
-/*
-type ElevManager struct{
-	SelfIP string //IP dobbelt opp - fjern SelfIP
-	//Elevators Connection
-	Master string  
-	
-}*/

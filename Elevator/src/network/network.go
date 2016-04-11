@@ -12,29 +12,16 @@ import(
 	
 )
 
-//var SELFIP string
+
 var conn map[string]bool
-//var cost = make(map[string]int)
-//var elev elevatorDriver.ElevManager
-//cost = make(map[string]bool)
 func broadcastIP(IP string, chSend chan Message){
 	for{
-		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
+		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: "" }
 		time.Sleep(100*time.Millisecond)
 		
 	}
 }
-/*
-func BroadcastCost(IP string, order elevatorDriver.Order, chSend chan Message){
-	
-	cost := costManager.GetOwnCost(order)
-	for{
-		chSend <- Message{FromIP: IP, MessageId: Cost, Cost: cost, ToIP: ""}
-		time.Sleep(100*time.Millisecond)
-		
-	}
-}
-*/
+
 func NetworkHandler(chIn chan Message, chOut chan Message){ 
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
