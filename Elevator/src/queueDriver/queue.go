@@ -124,6 +124,8 @@ func setDir(dir int, selfIP string){
 
 func PassingFloor(floor int, selfIP string){ 
 	setCurrentFloor(floor, selfIP)
+	fmt.Println("selfIP: ", selfIP)
+	fmt.Println("CurrentFloor: ", floor)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
 
@@ -208,7 +210,7 @@ func GetDirection(selfIP string){
 func PrintQueue(){
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
 			for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-				fmt.Print(MasterQueue[floor][button])
+				fmt.Print(Queue[floor][button])
 			} 
 			fmt.Println()
 	}

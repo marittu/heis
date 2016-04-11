@@ -65,6 +65,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			break
 		
 		case floor := <- chGetFloor:
+			fmt.Println("Recieved from floor channel")
 			queueDriver.PassingFloor(floor, SelfIP)
 			break
 		
@@ -90,6 +91,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				if SelfIP == message.ToIP{
 					fmt.Println("Order to: ", message.ToIP)
 					queueDriver.AddOrder(message.Order)
+					queueDriver.PrintQueue()
 					queueDriver.GetDirection(SelfIP)
 					//queueDriver.PassingFloor(floor, SelfIP)
 					break

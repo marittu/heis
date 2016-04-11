@@ -78,9 +78,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			chOut <- received
 
 		case send := <-chIn:
-			fmt.Println("Sending")
 			chUDPSend <- send
-			fmt.Println("Finito")
 
 			
 		}
