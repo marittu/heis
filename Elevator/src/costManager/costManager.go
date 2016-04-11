@@ -4,7 +4,7 @@ import(
 	"../elevatorDriver"
 	//"../network"
 	//"../queueDriver"
-	"fmt"
+	//"fmt"
 	"math"
 )
 
@@ -26,7 +26,7 @@ func GetTargetElevator(order elevatorDriver.Order) string{
 
 func getOwnCost(pos int, order elevatorDriver.Order) int{ 
 	
-	
+
 
 
 	cost:= 0
