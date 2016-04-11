@@ -19,7 +19,7 @@ func GetTargetElevator(order elevatorDriver.Order) string{
 
 		}
 
-			
+	fmt.Println("Cost: ", cost, "for elev: ", elevatorDriver.ConnectedElevs[elev].IP)		
 	}
 	return target
 }
@@ -76,7 +76,7 @@ func getOwnCost(pos int, order elevatorDriver.Order) int{
 	}
 
 
-	//fmt.Println("Cost: ", cost, "for elev: ", elevatorDriver.ConnectedElevs[pos].IP)
+	
 	return cost
 
 }
