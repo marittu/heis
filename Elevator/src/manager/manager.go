@@ -29,7 +29,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 	
 			}else{ //External order
 
-				queueDriver.AddOrderMasterQueue(order)
+				
 				fmt.Println("Order recieved")
 				var msg network.Message
 				msg.Order = order
@@ -49,6 +49,8 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			
 			switch(message.MessageId){
 
+			case network.NewOrder:
+				queueDriver.AddOrderMasterQueue(message.Order)
 
 				/*
 			case 4: //Find target
