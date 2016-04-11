@@ -16,9 +16,11 @@ func GetTargetElevator(order elevatorDriver.Order) string{
 		if cost < min{
 			min = cost
 			target = elevatorDriver.ConnectedElevs[elev].IP
+
 		}
+
+			fmt.Println("Cost: ", cost, "for elev: ", target)
 	}
-	fmt.Println("Cost: ", min)
 	return target
 }
 
