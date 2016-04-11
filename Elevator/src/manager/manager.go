@@ -45,7 +45,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				
 				chToNetwork <- msg
 				
-				break	
+				//break	
 			}else{ //External order
 				
 				queueDriver.AddOrderMasterQueue(order)
@@ -59,13 +59,15 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				chToNetwork <- msg
 				
 				
-				break
+				//break
 			}
 			
 			break
+		
 		case floor := <- chGetFloor:
 			queueDriver.PassingFloor(floor, SelfIP)
 			break
+		
 		case message := <-chFromNetwork:
 			
 			switch(message.MessageId){

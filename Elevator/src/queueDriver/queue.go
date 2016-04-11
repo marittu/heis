@@ -22,7 +22,7 @@ func QueueInit(){
 }
 
 func AddOrder(order elevatorDriver.Order){// , selfIP string
-	
+	fmt.Println("Order at: ", order.Floor)
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)	
 

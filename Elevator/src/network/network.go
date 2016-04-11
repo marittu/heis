@@ -3,7 +3,6 @@ package network
 import(
 
 	"../elevatorDriver"
-	//"../costManager"
 	"time"
 	"net"
 	"strings"
@@ -30,7 +29,6 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	
 	chUDPSend := make(chan Message, 100)
 	chUDPReceive := make(chan Message, 100)
-	//ownCost := costManager.GetOwnCost()
 	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
@@ -62,7 +60,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			}
 
 			if received.MessageId == NewInternalOrder{
-			
+
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 					if received.FromIP ==  elevatorDriver.ConnectedElevs[elev].IP{
 						elevatorDriver.ConnectedElevs[elev].OwnQueue[received.Order.Floor][received.Order.ButtonType] = 1
@@ -72,40 +70,23 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 						
 				}
 
-				//fmt.Println("Broscasting")
-				//go BroadcastCost(SelfIP, received.Order, chUDPSend)
-			}
-			
-		/*	if received.MessageId == Cost{
 				
-				AppendCost(received.FromIP, received.Cost)
-				if len(cost) == len(elevatorDriver.ConnectedElevs){
-					chOut <- Message{FromIP: "", MessageId: FindTarget, ToIP: elev.Master}
-				}
-
 			}
-			break*/
-
 			
+				
 				
 			chOut <- received
 
 		case send := <-chIn:
-
+			fmt.Println("Sending")
 			chUDPSend <- send
+			fmt.Println("Finito")
 
 			
 		}
 	}
 
 }
-/*
-func GetElevManager() elevatorDriver.ElevManager {
-	
-	return elev
-
-}
-*/
 
 func appendConn(IP string){
 
@@ -116,6 +97,7 @@ func appendConn(IP string){
 			temp.IP = IP
 			temp.LastPing = time.Now()
 			temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal()
+			temp.Info.Dir = 0
 			//SelfIP = IP
 			
 			elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
@@ -126,34 +108,7 @@ func appendConn(IP string){
  	}
 
 }
-/*
-func AppendCost(IP string, ownCost int){
-	if _, ok := cost[IP]; ok{
-		//cost already addded
-	}else{
-		//cost = append(IP, cost)
-		cost[IP] = ownCost
-		fmt.Println("Cost added: ", IP, " cost: ", ownCost)
-			
- 	}
- 	
 
-}
-
-func GetMinCost() string{
-	min := 1000
-	var ideal string
-	for IP, minCost := range cost{
-		if minCost < min{
-			ideal = IP
-			min = minCost
-		}
-	}
-	//fmt.Println("Ideal: ", ideal)
-	return ideal
-
-}
-*/
 func selectMaster(){
 	var masterIP string
 	min := 256
