@@ -47,7 +47,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				
 			}else{ //External order
 				
-				queueDriver.AddOrderMasterQueue(order)
+				
 				var msg network.Message
 				msg.Order = order
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
@@ -61,33 +61,16 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			break
 		
 		case floor := <- chGetFloor:
-			fmt.Println("Recieved from floor channel")
 			queueDriver.PassingFloor(floor, SelfIP, chToNetwork)
 			break
 		
-		/*case floor := <- chDoorOpen:
-			fmt.Println("Kommer hit?")
-			
-			var temp elevatorDriver.ElevInfo
-			temp.Dir = 0
-			temp.CurrentFloor = floor
-			var msg network.Message
-			msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
-			msg.Info = temp
-			msg.MessageId = network.Ack
-				
-			chToNetwork <- msg
-			fmt.Println("Stuck?")
-
-			break*/
-
-
+	
 		case message := <-chFromNetwork:
 			
 			switch(message.MessageId){
 
 			case network.NewOrder:
-				
+				queueDriver.AddOrderMasterQueue(order)
 				if SelfIP == message.ToIP{ //if master
 					
 					target := costManager.GetTargetElevator(message.Order)
@@ -103,7 +86,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.OrderFromMaster:
 				if SelfIP == message.ToIP{ //if master
-					fmt.Println("Order to: ", message.ToIP)
+					
 					queueDriver.AddOrder(message.Order)
 					queueDriver.PrintQueue()
 					queueDriver.GetDirection(SelfIP, chToNetwork)
