@@ -40,6 +40,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 	for{
 		select{
 		case received := <- chUDPReceive:
+
 			if received.MessageId == Ping{
 				appendConn(received.FromIP)
 				
@@ -61,10 +62,12 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			}
 
 			if received.MessageId == NewInternalOrder{
+			
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 					if received.FromIP ==  elevatorDriver.ConnectedElevs[elev].IP{
 						elevatorDriver.ConnectedElevs[elev].OwnQueue[received.Order.Floor][received.Order.ButtonType] = 1
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
+						chOut <- received
 					}
 						
 				}

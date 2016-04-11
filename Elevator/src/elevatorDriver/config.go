@@ -10,7 +10,7 @@ var eInfo ElevInfo
 
 
 const (
-	PORT = ":30105"
+	PORT = ":30106"
 )
 
 

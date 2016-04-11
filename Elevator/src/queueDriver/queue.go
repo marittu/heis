@@ -22,20 +22,7 @@ func QueueInit(){
 }
 
 func AddOrder(order elevatorDriver.Order){// , selfIP string
-	/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
-		if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
-			elevatorDriver.ConnectedElevs[elev].OwnQueue[order.Floor][order.ButtonType] = 1
-			elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)*/
-			/*for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
-					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-						fmt.Print(elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button])
-					} 
-					fmt.Println()
-			}
-			fmt.Println()
-			
-		}
-	}*/	
+	
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)	
 

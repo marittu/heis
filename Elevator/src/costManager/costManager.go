@@ -26,9 +26,9 @@ func GetTargetElevator(order elevatorDriver.Order) string{
 
 func getOwnCost(pos int, order elevatorDriver.Order) int{ 
 	
-	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+	/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 		fmt.Println(elevatorDriver.ConnectedElevs[elev])
-	}
+	}*/
 
 
 	cost:= 0
