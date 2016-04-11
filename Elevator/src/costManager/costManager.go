@@ -31,6 +31,7 @@ func getOwnCost(pos int, order elevatorDriver.Order) int{
 	
 	if (elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor == order.Floor) && (elevatorDriver.ConnectedElevs[pos].Info.Dir == 0){ 
 		cost = 0
+		fmt.Println("cost 0")
 		return cost
 	}
 
@@ -38,28 +39,33 @@ func getOwnCost(pos int, order elevatorDriver.Order) int{
 	for button := 0; button < elevatorDriver.N_BUTTONS; button ++{ 
 		if elevatorDriver.ConnectedElevs[pos].OwnQueue[order.Floor][button] == 1{
 			cost = 1
+			fmt.Println("cost 1")
 			return cost
 		}	
 	}
 
-	//higher cost for more orders and further away from ordered floor
+	//higher cost for more orders 
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++{
 			for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
 					if elevatorDriver.ConnectedElevs[pos].OwnQueue[floor][button] == 1{
 						cost += 1
+						fmt.Println("cost more orders 1")
 						
 					}
 			}
 	}
 
 	cost += int(math.Abs(float64(order.Floor - elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor)))
-
+	fmt.Println("cost away from floor")
 	if elevatorDriver.ConnectedElevs[pos].Info.Dir == 0{ //elevator at floor
 		cost += 1 
+		fmt.Println("cost dir 0")
 	}else if elevatorDriver.ConnectedElevs[pos].Info.Dir == 1 && order.ButtonType == 1{ //elevator going up order going down
 		cost += 3
+		fmt.Println("cost dir 1")
 	}else if elevatorDriver.ConnectedElevs[pos].Info.Dir == -1 && order.ButtonType == 0{ //elevator going down order going up
 		cost += 3
+		fmt.Println("cost dir -1")
 	}
 
 
