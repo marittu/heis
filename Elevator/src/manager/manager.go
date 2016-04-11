@@ -51,7 +51,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.NewOrder:
 				queueDriver.AddOrderMasterQueue(message.Order)
-				if SelfIP == message.Master{
+				if SelfIP == message.ToIP{
 					target := costManager.GetTargetElevator(message.Order)
 					fmt.Println("target", target)	
 				}
