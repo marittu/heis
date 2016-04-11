@@ -31,6 +31,8 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				
 				queueDriver.AddOrder(order) // , SelfIP
 				queueDriver.GetDirection(SelfIP)
+
+
 				var temp elevatorDriver.ElevInfo
 				temp.Dir = queueDriver.GetDir()
 				temp.CurrentFloor = queueDriver.GetCurrentFloor()
@@ -87,7 +89,8 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					fmt.Println("Order to: ", message.ToIP)
 					queueDriver.AddOrder(message.Order)
 					queueDriver.GetDirection(SelfIP)
-
+					//queueDriver.PassingFloor(floor, SelfIP)
+					break
 				}
 				
 			
