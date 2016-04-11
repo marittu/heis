@@ -25,6 +25,10 @@ func GetTargetElevator(order elevatorDriver.Order) string{
 }
 
 func getOwnCost(pos int, order elevatorDriver.Order) int{ 
+	
+	fmt.Println(elevatorDriver.ConnectedElevs[pos])
+
+
 	cost:= 0
 
 	//elevator already at floor
@@ -56,7 +60,7 @@ func getOwnCost(pos int, order elevatorDriver.Order) int{
 	}
 
 	cost += int(math.Abs(float64(order.Floor - elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor)))
-	fmt.Println("Distance from floor ",int(math.Abs(float64(order.Floor - elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor))), "CurrentFloor: ", elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor )
+	//fmt.Println("Distance from floor ",int(math.Abs(float64(order.Floor - elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor))), "CurrentFloor: ", elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor )
 	//fmt.Println("cost away from floor")
 	if elevatorDriver.ConnectedElevs[pos].Info.Dir == 0{ //elevator at floor
 		cost += 1 
@@ -70,7 +74,7 @@ func getOwnCost(pos int, order elevatorDriver.Order) int{
 	}
 
 
-	fmt.Println("Cost: ", cost, "for elev: ", elevatorDriver.ConnectedElevs[pos].IP)
+	//fmt.Println("Cost: ", cost, "for elev: ", elevatorDriver.ConnectedElevs[pos].IP)
 	return cost
 
 }

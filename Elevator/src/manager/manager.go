@@ -51,51 +51,11 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.NewOrder:
 				queueDriver.AddOrderMasterQueue(message.Order)
-				if SelfIP == message.ToIP{
+				if SelfIP == message.ToIP{ //if master
 					target := costManager.GetTargetElevator(message.Order)
 					fmt.Println("target", target)	
 				}
 				
-
-				/*
-			case 4: //Find target
-				if SelfIP == message.ToIP{
-					target := network.GetMinCost()
-					fmt.Println("Target: ", target)
-					var msg network.Message
-					msg.ToIP = target
-					msg.FromIP = elevator.Master
-					msg.MessageId = network.MasterDistributesOrder
-					msg.Order = message.Order
-					//fmt.Println("sending target")
-					chToNetwork <- msg //fyller opp kanalen - kommer ikke videre
-					//fmt.Println("send done")
-	
-				}
-				*/
-				//network.AppendCost(message.FromIP, message.Cost)
-					//fmt.Println("Sending")
-				//fmt.Println("Elevator: ", message.FromIP, " cost: ", message.Cost)
-
-				//queueDriver.AddOrderMasterQueue(message.Order)
-				
-				/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
-
-					
-				}*/	
-
-				//target := costManager.GetTargetElev()
-				
-			
-			/*
-			case 5: //Target adds order from master
-				//fmt.Println("in add order case")
-				if SelfIP == message.ToIP{
-					//fmt.Println("Adding order")
-					queueDriver.AddOrder(message.Order)
-					queueDriver.GetDirection()
-				}
-			*/	
 			}
 		}
 	}
