@@ -5,7 +5,7 @@ import (
 	"../elevatorDriver"
 	"../queueDriver"
 	"../network"
-	//"../costManager"
+	"../costManager"
 	"fmt"
 	"net"
 	"strings"
@@ -51,6 +51,8 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.NewOrder:
 				queueDriver.AddOrderMasterQueue(message.Order)
+				target := costManager.GetTargetElevator(message.Order)
+				fmt.Println("target", target)
 
 				/*
 			case 4: //Find target
