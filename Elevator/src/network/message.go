@@ -21,6 +21,7 @@ type Message struct{
 	FromIP string
 	ToIP string
 	Order elevatorDriver.Order
+	Info elevatorDriver.ElevInfo
 	//Cost int
 	
 }

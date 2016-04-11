@@ -46,14 +46,14 @@ type Connection struct{
 	IP string
 	LastPing time.Time
 	Master string
-	//OwnQueue [N_FLOORS][N_BUTTONS]int
-	//Info ElevInfo
+	OwnQueue [N_FLOORS][N_BUTTONS]int
+	Info ElevInfo
 }
 
 var ConnectedElevs []Connection
 
-type MasterStruct struct{
-	
+/*type MasterStruct struct{
+
 }
 
-var MasterStruct MasterStruct
+var MasterStruct MasterStruct*/

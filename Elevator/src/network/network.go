@@ -61,9 +61,10 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 			}
 
 			if received.MessageId == NewInternalOrder{
-				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
-					if received.FromIP ==  elevatorDriver.ConnectedElevs[elevs].IP{
-						elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 1
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+					if received.FromIP ==  elevatorDriver.ConnectedElevs[elev].IP{
+						elevatorDriver.ConnectedElevs[elev].OwnQueue[received.Order.Floor][received.Order.ButtonType] = 1
+						elevatorDriver.ConnectedElevs[elev].Info = received.Info
 					}
 						
 				}

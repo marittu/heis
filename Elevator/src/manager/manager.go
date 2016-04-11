@@ -35,8 +35,12 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 				queueDriver.AddOrder(order) // , SelfIP
 				queueDriver.GetDirection(SelfIP)
+				var temp elevatorDriver.ElevInfo
+				temp.Dir = queueDriver.GetDir()
+				temp.CurrentFloor = queueDriver.GetCurrentFloor()
 				var msg network.Message
 				msg.Order = order
+				msg.Info = temp
 				msg.FromIP = SelfIP
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
 				msg.MessageId = network.NewInternalOrder
