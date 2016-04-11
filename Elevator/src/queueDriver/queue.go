@@ -107,11 +107,17 @@ func openDoor(floor int, selfIP string){
 
 }
 
-func setCurrentFloor(floor int){
-	Info.CurrentFloor = floor    
+func setCurrentFloor(floor int, selfIP string){
+	Info.CurrentFloor = floor
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+			if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
+				elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor = floor
+			}
+	}  
 }
 
 func GetCurrentFloor() int{
+
 	return Info.CurrentFloor
 }
 
@@ -119,19 +125,25 @@ func GetDir()int{
 	return Info.Dir
 }
 
-func setDir(dir int){
+func setDir(dir int, selfIP string){
 	Info.Dir = dir
+
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+			if elevatorDriver.ConnectedElevs[elev].IP == selfIP{
+				elevatorDriver.ConnectedElevs[elev].Info.Dir = dir
+			}
+	} 
 	
 }
 
 func PassingFloor(floor int, selfIP string){ 
-	setCurrentFloor(floor)
+	setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
 
 	if EmptyQueue() == true{
 		elevatorDriver.ElevDrive(0)
-		setDir(0)
+		setDir(0, selfIP)
 		
 	}else{
 		if Queue[floor][2] == 1{
@@ -159,7 +171,7 @@ func GetDirection(selfIP string){
 	currentDir := GetDir()
 	currentFloor := GetCurrentFloor()		
 	if EmptyQueue() == true{
-		setDir(0)
+		setDir(0, selfIP)
 		
 	}else{
 		
@@ -169,10 +181,10 @@ func GetDirection(selfIP string){
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 					if Queue[floor][button] == 1{
 						if floor > currentFloor{
-							setDir(1)
+							setDir(1, selfIP)
 							elevatorDriver.ElevDrive(1)
 						}else if floor < currentFloor{
-							setDir(-1)
+							setDir(-1, selfIP)
 							elevatorDriver.ElevDrive(-1)
 						}else if floor == currentFloor{
 							openDoor(floor, selfIP)
@@ -185,7 +197,7 @@ func GetDirection(selfIP string){
 			if OrderAbove(currentFloor){
 				elevatorDriver.ElevDrive(1)
 			}else if OrderBelow(currentFloor){	
-				setDir(-1)
+				setDir(-1, selfIP)
 				elevatorDriver.ElevDrive(-1)
 			}
 		case -1:
@@ -193,7 +205,7 @@ func GetDirection(selfIP string){
 
 				elevatorDriver.ElevDrive(-1)
 			}else if OrderAbove(currentFloor){	
-				setDir(1)
+				setDir(1, selfIP)
 				elevatorDriver.ElevDrive(1)
 			}
 
