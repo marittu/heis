@@ -93,6 +93,8 @@ func openDoor(floor int, selfIP string, chToNetwork chan network.Message){
 	elevatorDriver.ElevSetDoorOpenLamp(1)
 	time.Sleep(2*time.Second)
 	elevatorDriver.ElevSetDoorOpenLamp(0)
+	setDir(0)
+
 	var temp elevatorDriver.ElevInfo
 	temp.Dir = 0
 	temp.CurrentFloor = floor

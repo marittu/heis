@@ -88,7 +88,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				if SelfIP == message.ToIP{ //if master
 					
 					queueDriver.AddOrder(message.Order)
-					queueDriver.PrintQueue()
 					queueDriver.GetDirection(SelfIP, chToNetwork)
 					break
 				}
