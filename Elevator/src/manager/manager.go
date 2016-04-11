@@ -7,8 +7,8 @@ import (
 	"../network"
 	//"../costManager"
 	"fmt"
-	"net"
-	"strings"
+	//"net"
+	//"strings"
 	//"time"
 )
 
@@ -16,8 +16,8 @@ import (
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	//elevator := network.GetElevManager()
-	addr, _ := net.InterfaceAddrs()
-	SelfIP := strings.Split(addr[1].String(),"/")[0]
+	//addr, _ := net.InterfaceAddrs()
+	//SelfIP := strings.Split(addr[1].String(),"/")[0]
 	for{ 
 		select{
 		case order := <- chButtonPressed: //button pressed
@@ -34,7 +34,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				var msg network.Message
 				msg.Order = order
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
-				msg.FromIP = SelfIP
+				//msg.FromIP = SelfIP
 				msg.MessageId = network.NewOrder
 
 				chToNetwork <- msg

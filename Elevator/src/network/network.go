@@ -86,7 +86,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 				}
 
 			}
-		*/	break
+			break*/
 
 			
 				
