@@ -60,12 +60,19 @@ func NetworkHandler(chIn chan Message, chOut chan Message){
 				}
 			}
 
-		/*	if received.MessageId == NewOrder{
-				fmt.Println("Broscasting")
-				go BroadcastCost(SelfIP, received.Order, chUDPSend)
+			if received.MessageId == NewInternalOrder{
+				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++{
+					if received.FromIP ==  elevatorDriver.ConnectedElevs[elevs].IP{
+						elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 1
+					}
+						
+				}
+
+				//fmt.Println("Broscasting")
+				//go BroadcastCost(SelfIP, received.Order, chUDPSend)
 			}
 			
-			if received.MessageId == Cost{
+		/*	if received.MessageId == Cost{
 				
 				AppendCost(received.FromIP, received.Cost)
 				if len(cost) == len(elevatorDriver.ConnectedElevs){

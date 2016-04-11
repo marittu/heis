@@ -17,24 +17,28 @@ import (
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	//elevator := network.GetElevManager()
 
+	addr, _ := net.InterfaceAddrs()
+	SelfIP := strings.Split(addr[1].String(),"/")[0]
+
 	for{ 
 
 		/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 			fmt.Println(elevatorDriver.ConnectedElevs[elev])
 		}*/
-		addr, _ := net.InterfaceAddrs()
-		SelfIP := strings.Split(addr[1].String(),"/")[0]
 		select{
 		case order := <- chButtonPressed: //button pressed
 
 
 			if order.ButtonType == 2{ //BUTTON_INTERNAL 
+				
+				fmt.Println(SelfIP)
+
 				queueDriver.AddOrder(order) // , SelfIP
 				queueDriver.GetDirection(SelfIP)
 				var msg network.Message
 				msg.Order = order
 				msg.FromIP = SelfIP
-
+				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
 				msg.MessageId = network.NewInternalOrder
 				
 			}else{ //External order
@@ -66,13 +70,12 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					fmt.Println("target", target)	
 				}
 
-			case network.NewInternalOrder:
+			/*case network.NewInternalOrder:
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 					if elevatorDriver.ConnectedElevs[elev].IP == message.FromIP{
-						elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 1
 					}
 				}
-
+			*/
 
 								
 			}
