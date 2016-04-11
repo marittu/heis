@@ -136,16 +136,19 @@ func PassingFloor(floor int, selfIP string){
 	}else{
 		if Queue[floor][2] == 1{
 			elevatorDriver.ElevDrive(0)
+			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)	
 
 		}else if (dir == 1 && Queue[floor][0] == 1){
 			elevatorDriver.ElevDrive(0)
+			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
 			
 		}else if (dir == -1 && Queue[floor][1] == 1){
 			elevatorDriver.ElevDrive(0)
+			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
 			
