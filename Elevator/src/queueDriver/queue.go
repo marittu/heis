@@ -134,25 +134,30 @@ func PassingFloor(floor int, selfIP string){
 		setDir(0, selfIP)
 		
 	}else{
-		if Queue[floor][2] == 1{
+		if Queue[floor][2] == 1{ //internal order
 			elevatorDriver.ElevDrive(0)
-			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)	
 
-		}else if (dir == 1 && Queue[floor][0] == 1){
+		}else if (dir == 1 && Queue[floor][0] == 1){ //order up, dir up
 			elevatorDriver.ElevDrive(0)
-			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
 			
-		}else if (dir == -1 && Queue[floor][1] == 1){
+		}else if (dir == -1 && Queue[floor][1] == 1){ //order down dir down
 			elevatorDriver.ElevDrive(0)
-			setDir(0, selfIP)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP)
-			
-		}	
+		}else if dir == 1 && Queue[3][1] == 1{//order down at fourth floor 
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			openDoor(floor, selfIP)
+		}else if dir == -1 && Queue[0][0] == 1{//order up at first floor
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			openDoor(floor, selfIP)
+		}		
+
 	}
 	
 }
