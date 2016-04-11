@@ -16,6 +16,9 @@ import (
 
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message){
 	//elevator := network.GetElevManager()
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+		fmt.Println(elevatorDriver.ConnectedElevs[elev])
+	}
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(),"/")[0]
 	for{ 
