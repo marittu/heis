@@ -86,6 +86,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
 
 					if elevatorDriver.ConnectedElevs[elev].IP == message.ToIP{
+						fmt.Println("Order to: ", message.ToIP)
 						queueDriver.AddOrder(message.Order)
 						queueDriver.GetDirection(SelfIP)
 
