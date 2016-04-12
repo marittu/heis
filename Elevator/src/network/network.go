@@ -104,7 +104,8 @@ func appendConn(IP string) {
 
 		elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 		fmt.Println("Connected elevator: ", IP)
-		fmt.Println("")
+		fmt.Println("Current floor: ", elevatorDriver.ConnectedElevs[0].Info.CurrentFloor)
+
 		conn[IP] = true
 		selectMaster()
 	}
