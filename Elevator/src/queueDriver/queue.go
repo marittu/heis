@@ -181,7 +181,6 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
 	//PrintQueue()
 	setCurrentFloor(floor, selfIP, chToNetwork)
-	//setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
 
@@ -226,14 +225,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
 
-		} /*else if dir == -1 && floor == 0 {
-			elevatorDriver.ElevDrive(0)
-			time.Sleep(100 * time.Millisecond)
-
-		} else if dir == 1 && floor == 3 {
-			elevatorDriver.ElevDrive(0)
-			time.Sleep(100 * time.Millisecond)
-		}*/
+		}
 	}
 
 }

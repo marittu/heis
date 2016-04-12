@@ -1,13 +1,11 @@
-
 package elevatorDriver
 
 /*
-#cgo CFLAGS: -std=c11
+#cgo CFLAGS: -std=gnu11
 #cgo LDFLAGS: -lcomedi -lm
 #include "io.h"
 */
 import "C"
-
 
 func ioInit() bool {
 	return int(C.io_init()) != 0
