@@ -46,7 +46,7 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 		for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
 			if elevatorDriver.ConnectedElevs[pos].OwnQueue[floor][button] == 1 {
 				cost += 1
-				//fmt.Println("Already has orders")
+				fmt.Println("Already has orders")
 			}
 		}
 	}

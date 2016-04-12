@@ -55,7 +55,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 				}
 			}
 
-			if received.MessageId == NewInternalOrder { //Flytt til channel manager?
+			if received.MessageId == NewInternalOrder || received.MessageId == OrderFromMaster {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
@@ -68,7 +68,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 			}
 
-			if received.MessageId == Ack { //Flytt til channel manager?
+			if received.MessageId == Ack {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
