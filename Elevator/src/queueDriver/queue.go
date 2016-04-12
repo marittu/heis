@@ -3,7 +3,9 @@ package queueDriver
 import (
 	"../elevatorDriver"
 	"../network"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"time"
 )
 
@@ -25,7 +27,7 @@ func AddOrder(order elevatorDriver.Order) { // , selfIP string
 	fmt.Println("Order at: ", order.Floor)
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
-
+	FileWrite(elevatorDriver.QUEUE)
 }
 
 func AddOrderMasterQueue(order elevatorDriver.Order) {
@@ -69,8 +71,10 @@ func OrderBelow(floor int) bool {
 
 func DeleteOrder(floor int, selfIP string) {
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+		if Queue[floor][button] == 1 {
+			Queue[floor][button] = 0
+		}
 
-		Queue[floor][button] = 0
 		//MasterQueue[floor][button] = 0
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 			if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
@@ -80,6 +84,8 @@ func DeleteOrder(floor int, selfIP string) {
 		}
 
 	}
+
+	FileWrite(elevatorDriver.QUEUE)
 }
 
 func openDoor(floor int, selfIP string, chToNetwork chan network.Message) {
@@ -136,7 +142,7 @@ func setDir(dir int, selfIP string) {
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
-	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+	/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if selfIP == elevatorDriver.ConnectedElevs[elev].IP {
 			for Floor := 0; Floor < elevatorDriver.N_FLOORS; Floor++ {
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
@@ -146,7 +152,8 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			}
 			fmt.Println()
 		}
-	}
+	}*/
+	PrintQueue()
 	setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
@@ -241,4 +248,27 @@ func PrintQueue() {
 		fmt.Println()
 	}
 	fmt.Println()
+}
+
+func FileRead(file string) {
+	input, err := ioutil.ReadFile(file)
+	if err != nil {
+		fmt.Println("Error: file not read")
+		return
+	}
+	err = json.Unmarshal(input, &Queue)
+	if err != nil {
+		fmt.Println("Error: could not read json file", err.Error())
+	}
+}
+
+func FileWrite(file string) {
+	output, err := json.Marshal(Queue)
+	if err != nil {
+		fmt.Println("Error queue not json encoded")
+	}
+	err = ioutil.WriteFile(file, output, 0666)
+	if err != nil {
+		fmt.Println("Error: file not written")
+	}
 }
