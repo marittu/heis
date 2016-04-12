@@ -34,6 +34,7 @@ func ElevInit() {
 		}
 	}
 
+	//All elevators start at first floor
 	floor := ElevGetFloorSensorSignal()
 	for floor != 0 {
 		ElevDrive(-1)
