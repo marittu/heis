@@ -14,12 +14,15 @@ var MasterQueue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 var Info elevatorDriver.ElevInfo
 
 func QueueInit() {
-	Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{
-		{0, -1, 0},
-		{0, 0, 0},
-		{0, 0, 0},
-		{-1, 0, 0}}
+	/*Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{
+	{0, -1, 0},
+	{0, 0, 0},
+	{0, 0, 0},
+	{-1, 0, 0}}
 
+
+	*/
+	FileRead(elevatorDriver.QUEUE)
 	MasterQueue = Queue
 }
 
@@ -158,6 +161,16 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
 
+	if floor == 0 {
+		elevatorDriver.ElevDrive(0)
+		time.Sleep(100 * time.Millisecond)
+		GetDirection(selfIP, chToNetwork)
+	} else if floor == 3 {
+		elevatorDriver.ElevDrive(0)
+		time.Sleep(100 * time.Millisecond)
+		GetDirection(selfIP, chToNetwork)
+	}
+
 	if EmptyQueue() == true {
 		elevatorDriver.ElevDrive(0)
 		setDir(0, selfIP)
@@ -177,16 +190,25 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
+
 		} else if OrderBelow(floor) == false && dir == -1 && Queue[floor][0] == 1 { //order up going down
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
+
 		} else if OrderAbove(floor) == false && dir == 1 && Queue[floor][1] == 1 { //order down going up
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
 
-		}
+		} /*else if dir == -1 && floor == 0 {
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+
+		} else if dir == 1 && floor == 3 {
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+		}*/
 	}
 
 }

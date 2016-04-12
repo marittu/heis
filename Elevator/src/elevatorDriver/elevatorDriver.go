@@ -27,18 +27,13 @@ func ElevInit() {
 		return
 	}
 	fmt.Println("Initialized")
-	for floor := 0; floor < N_FLOORS; floor++ {
-		for button := BUTTON_CALL_UP; button < N_BUTTONS; button++ {
-			ElevSetButtonLamp(floor, button, 0) //no orders before initialization
-			ElevSetDoorOpenLamp(0)
-		}
-	}
 
-	//All elevators start at first floor
 	floor := ElevGetFloorSensorSignal()
-	for floor != 0 {
+	if floor == -1 {
 		ElevDrive(-1)
-		floor = ElevGetFloorSensorSignal()
+
+	} else {
+		ElevDrive(0)
 	}
 
 }

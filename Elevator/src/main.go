@@ -31,7 +31,6 @@ func main() {
 
 	//backup := exec.Command("gnome-terminal", "-x", "sh", "-c", "go run main.go")
 	//backup.Run()
-
 	queueDriver.QueueInit()
 	elevatorDriver.ElevInit()
 
