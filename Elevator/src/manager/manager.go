@@ -88,15 +88,14 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 					elevatorDriver.ElevSetButtonLamp(message.Info.CurrentFloor, button, 0)
 				}
+				/*
+					for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+						if message.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
+							elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 0
+							chToNetwork <- message
+						}
 
-				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-					if message.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
-						elevatorDriver.ConnectedElevs[elev].OwnQueue[message.Order.Floor][message.Order.ButtonType] = 0
-						elevatorDriver.ConnectedElevs[elev].Info = message.Info
-						chToNetwork <- message
-					}
-
-				}
+					}*/
 			}
 		}
 	}

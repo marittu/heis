@@ -135,6 +135,9 @@ func setDir(dir int, selfIP string) {
 }
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
+
+	PrintQueue()
+
 	setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
@@ -158,16 +161,16 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
-		} else if dir == 1 && Queue[floor][1] == 1 { //order down going up
+		} else if OrderBelow(floor) == false && dir == -1 && Queue[floor][0] == 1 { //order up going down
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
-		} else if dir == -1 && Queue[floor][0] == 1 { //order up going down
+		} else if OrderAbove(floor) == false && dir == 1 && Queue[floor][1] == 1 { //order down going up
 			elevatorDriver.ElevDrive(0)
 			time.Sleep(100 * time.Millisecond)
 			openDoor(floor, selfIP, chToNetwork)
-		}
 
+		}
 	}
 
 }
