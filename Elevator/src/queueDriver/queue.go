@@ -14,16 +14,15 @@ var MasterQueue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 var Info elevatorDriver.ElevInfo
 
 func QueueInit() {
-	/*Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{
-	{0, -1, 0},
-	{0, 0, 0},
-	{0, 0, 0},
-	{-1, 0, 0}}
 
-
-	*/
 	FileRead(elevatorDriver.QUEUE)
 	MasterQueue = Queue
+	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
+			Queue[floor][button] = 0 //Exteral orders handled by other elevators
+			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
+		}
+	}
 }
 
 func AddOrder(order elevatorDriver.Order) { // , selfIP string
@@ -266,7 +265,7 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 func PrintQueue() {
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-			fmt.Print(MasterQueue[floor][button])
+			fmt.Print(Queue[floor][button])
 		}
 		fmt.Println()
 	}
