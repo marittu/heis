@@ -28,21 +28,18 @@ func ElevInit() {
 	}
 	fmt.Println("Initialized")
 	for floor := 0; floor < N_FLOORS; floor++ {
-			for button := BUTTON_CALL_UP; button < N_BUTTONS; button++{
-				ElevSetButtonLamp(floor, button, 0) //no orders before initialization
-				ElevSetDoorOpenLamp(0)
-			}
+		for button := BUTTON_CALL_UP; button < N_BUTTONS; button++ {
+			ElevSetButtonLamp(floor, button, 0) //no orders before initialization
+			ElevSetDoorOpenLamp(0)
+		}
 	}
-			
+
 	floor := ElevGetFloorSensorSignal()
-	if floor == -1 {
+	for floor != 0 {
 		ElevDrive(-1)
-		
-	}else{
-		ElevDrive(0)
+		floor = ElevGetFloorSensorSignal()
 	}
-	
-	
+
 }
 
 func ElevDrive(dir ElevMotorDirection) {

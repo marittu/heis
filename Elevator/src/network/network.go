@@ -100,13 +100,12 @@ func appendConn(IP string) {
 		temp.LastPing = time.Now()
 		temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal()
 		temp.Info.Dir = 0
-		//SelfIP = IP
 
 		elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 		fmt.Println("Connected elevator: ", IP)
 
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-			fmt.Println("Current floor: ", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
+			fmt.Println("Current floor, ", elevatorDriver.ConnectedElevs[elev].IP, ": ", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
 		}
 		conn[IP] = true
 		selectMaster()
