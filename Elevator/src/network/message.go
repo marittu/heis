@@ -7,7 +7,7 @@ import (
 //Kan evt flyttes til config - kanskje bedre
 
 const ( //type of network message
-	Init             = 0
+
 	Ping             = 1
 	NewOrder         = 2
 	OrderFromMaster  = 3

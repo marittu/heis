@@ -188,15 +188,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	if EmptyQueue() == true {
 		elevatorDriver.ElevDrive(0)
 		setDir(0, selfIP)
-		var temp elevatorDriver.ElevInfo
-		temp.Dir = 0
-		temp.CurrentFloor = floor
-		var msg network.Message
-		msg.Info = temp
-		msg.FromIP = selfIP
-		msg.MessageId = network.Ping
-
-		chToNetwork <- msg
+		setCurrentFloor(floor, selfIP)
 
 	} else {
 		if Queue[floor][2] == 1 { //internal order
