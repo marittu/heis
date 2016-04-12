@@ -55,6 +55,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 		case floor := <-chGetFloor:
 			queueDriver.PassingFloor(floor, SelfIP, chToNetwork)
+
 			break
 
 		case message := <-chFromNetwork:

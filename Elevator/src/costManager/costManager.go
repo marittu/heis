@@ -2,6 +2,7 @@ package costManager
 
 import (
 	"../elevatorDriver"
+	"../queueDriver"
 	"fmt"
 	"math"
 )
@@ -25,7 +26,8 @@ func GetTargetElevator(order elevatorDriver.Order) string {
 func getOwnCost(pos int, order elevatorDriver.Order) int {
 
 	cost := 0
-
+	cur := queueDriver.GetCurrentFloorIP(elevatorDriver.ConnectedElevs[pos].IP)
+	fmt.Println("CurrentFloor in cost", cur, "for elev ", elevatorDriver.ConnectedElevs[pos].IP)
 	//elevator already at floor
 
 	if (elevatorDriver.ConnectedElevs[pos].Info.CurrentFloor == order.Floor) && (elevatorDriver.ConnectedElevs[pos].Info.Dir == 0) {

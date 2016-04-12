@@ -167,6 +167,9 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			fmt.Println()
 		}
 	}*/
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+		fmt.Println(elevatorDriver.ConnectedElevs[elev].IP, "	", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
+	}
 	PrintQueue()
 	setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)

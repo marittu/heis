@@ -43,7 +43,9 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 						elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor = received.Info.CurrentFloor
 
 					}
+
 				}
+
 			}
 
 			if received.MessageId == Ping {
@@ -56,7 +58,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 					}
 					//fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].LastPing)
-					fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor)
+					//fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor)
 
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
