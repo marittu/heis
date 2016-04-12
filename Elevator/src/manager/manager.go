@@ -97,10 +97,10 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 						for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-							if queueDriver.MasterQueue[floor][button] == 1 && elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] == 1 {
+							if queueDriver.MasterQueue[floor][button] == elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] {
 								added = true
 								break
-							} else if queueDriver.MasterQueue[floor][button] == 1 && elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] == 0 {
+							} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] {
 								added = false
 							}
 						}
