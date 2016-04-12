@@ -36,7 +36,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 		case received := <-chUDPReceive:
 
 			if received.MessageId == Ping {
-				appendConn(received.FromIP, chOut)
+				appendConn(received.FromIP)
 
 				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++ {
 
@@ -92,7 +92,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 }
 
-func appendConn(IP string, chOut chan Message) {
+func appendConn(IP string) {
 
 	if _, ok := conn[IP]; ok {
 		//IP already added
@@ -100,18 +100,13 @@ func appendConn(IP string, chOut chan Message) {
 		var temp elevatorDriver.Connection
 		temp.IP = IP
 		temp.LastPing = time.Now()
-		temp.Info.CurrentFloor = elevatorDriver.queueDriver.GetCurrentFloor() //bug med currentFloor kanskje sende over nett?
-		temp.Info.Dir = 0
-		var msg Message
-		msg.MessageId = Ping
-		msg.Info = temp.Info
+
 		elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 		fmt.Println("Connected elevator: ", IP)
 
 		conn[IP] = true
 		selectMaster()
 
-		chOut <- msg //trenger vi sende meld?
 	}
 
 }
@@ -144,6 +139,5 @@ func removeConn(elev int, chOut chan Message) {
 	var temp Message
 	temp.MessageId = Removed
 
-	chOut <- temp //trenger vi sende meld
-
+	chOut <- temp
 }
