@@ -136,7 +136,7 @@ func setDir(dir int, selfIP string) {
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
-	PrintQueue()
+	//PrintQueue()
 
 	setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
