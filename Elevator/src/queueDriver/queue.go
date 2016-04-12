@@ -167,7 +167,7 @@ func setDir(dir int, selfIP string) {
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
-	/*for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if selfIP == elevatorDriver.ConnectedElevs[elev].IP {
 			for Floor := 0; Floor < elevatorDriver.N_FLOORS; Floor++ {
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
@@ -177,7 +177,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 			}
 			fmt.Println()
 		}
-	}*/
+	}
 
 	//PrintQueue()
 	setCurrentFloor(floor, selfIP, chToNetwork)
