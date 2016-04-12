@@ -23,9 +23,10 @@ func QueueInit() {
 			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
 		}
 	}
+
 }
 
-func AddOrder(order elevatorDriver.Order) { // , selfIP string
+func AddOrder(order elevatorDriver.Order) {
 	fmt.Println("Order at: ", order.Floor)
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
@@ -128,6 +129,16 @@ func GetCurrentFloor() int {
 	return Info.CurrentFloor
 }
 
+func GetCurrentFloorIP(IP string) int {
+	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+		if elevatorDriver.ConnectedElevs[elev].IP == IP {
+			return elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor
+		}
+	}
+
+	return -1
+}
+
 func GetDir() int {
 	return Info.Dir
 }
@@ -174,6 +185,14 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	if EmptyQueue() == true {
 		elevatorDriver.ElevDrive(0)
 		setDir(0, selfIP)
+		var temp elevatorDriver.ElevInfo
+		temp.Dir = 0
+		temp.CurrentFloor = floor
+		var msg network.Message
+		msg.Info = temp
+		msg.MessageId = network.Ping
+
+		chToNetwork <- msg
 
 	} else {
 		if Queue[floor][2] == 1 { //internal order
