@@ -190,6 +190,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 		temp.CurrentFloor = floor
 		var msg network.Message
 		msg.Info = temp
+		msg.FromIP = selfIP
 		msg.MessageId = network.Ping
 
 		chToNetwork <- msg

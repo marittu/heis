@@ -35,6 +35,16 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 		select {
 		case received := <-chUDPReceive:
 
+			if received.MessageId == Init{
+
+				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++ {
+
+					if received.FromIP == elevatorDriver.ConnectedElevs[elevs].IP {
+						elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor = received.Info.CurrentFloor
+
+					}
+			}
+
 			if received.MessageId == Ping {
 				appendConn(received.FromIP)
 
