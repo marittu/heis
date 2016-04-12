@@ -83,6 +83,18 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 			}
 
+			if received.MessageId == Floor {
+
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
+						elevatorDriver.ConnectedElevs[elev].Info = received.Info
+						chOut <- received
+					}
+
+				}
+
+			}
+
 			chOut <- received
 
 		case send := <-chIn:

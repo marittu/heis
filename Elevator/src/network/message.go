@@ -14,6 +14,7 @@ const ( //type of network message
 	Ack              = 4
 	NewInternalOrder = 5
 	Removed          = 6
+	Floor            = 7
 )
 
 type Message struct {

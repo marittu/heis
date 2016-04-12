@@ -115,7 +115,7 @@ func openDoor(floor int, selfIP string, chToNetwork chan network.Message) {
 
 }
 
-func setCurrentFloor(floor int, selfIP string) {
+func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	Info.CurrentFloor = floor
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
@@ -123,6 +123,16 @@ func setCurrentFloor(floor int, selfIP string) {
 			fmt.Println(elevatorDriver.ConnectedElevs[elev].IP, "	", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
 		}
 	}
+
+	var temp elevatorDriver.ElevInfo
+	temp.Dir = 0
+	temp.CurrentFloor = floor
+	var msg network.Message
+	msg.FromIP = selfIP
+	msg.Info = temp
+	msg.MessageId = network.Floor
+
+	chToNetwork <- msg
 }
 
 func GetCurrentFloor() int {
@@ -170,7 +180,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	}*/
 
 	//PrintQueue()
-	setCurrentFloor(floor, selfIP)
+	setCurrentFloor(floor, selfIP, chToNetwork)
 	//setCurrentFloor(floor, selfIP)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
