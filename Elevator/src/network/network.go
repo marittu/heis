@@ -44,7 +44,8 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
 
 					}
-					fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].LastPing)
+					//fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].LastPing)
+					fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor)
 
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
@@ -99,7 +100,7 @@ func appendConn(IP string, chOut chan Message) {
 		var temp elevatorDriver.Connection
 		temp.IP = IP
 		temp.LastPing = time.Now()
-		temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal() //bug med currentFloor kanskje sende over nett?
+		temp.Info.CurrentFloor = elevatorDriver.queueDriver.GetCurrentFloor() //bug med currentFloor kanskje sende over nett?
 		temp.Info.Dir = 0
 		var msg Message
 		msg.MessageId = Ping
@@ -110,7 +111,7 @@ func appendConn(IP string, chOut chan Message) {
 		conn[IP] = true
 		selectMaster()
 
-		chOut <- msg
+		chOut <- msg //trenger vi sende meld?
 	}
 
 }
@@ -143,6 +144,6 @@ func removeConn(elev int, chOut chan Message) {
 	var temp Message
 	temp.MessageId = Removed
 
-	chOut <- temp
+	chOut <- temp //trenger vi sende meld
 
 }

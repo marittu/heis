@@ -43,3 +43,13 @@ func main() {
 	}
 
 }
+
+/*
+Ting som ikke funker:
+
+Når en heis mister nettet - klikker den andre
+Cost er fortsatt litt fucked
+CurrentFloor ved init
+
+
+*/
