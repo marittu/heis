@@ -36,7 +36,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 		case received := <-chUDPReceive:
 
 			if received.MessageId == Ping {
-				appendConn(received.FromIP)
+				appendConn(received.FromIP, chOut)
 
 				for elevs := 0; elevs < len(elevatorDriver.ConnectedElevs); elevs++ {
 
@@ -49,7 +49,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
 					if time.Since(stillAlive.LastPing) > 600*time.Millisecond {
-						removeConn(elevs)
+						removeConn(elevs, chOut)
 
 					}
 
@@ -91,7 +91,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 }
 
-func appendConn(IP string) {
+func appendConn(IP string, chOut chan Message) {
 
 	if _, ok := conn[IP]; ok {
 		//IP already added
@@ -99,17 +99,18 @@ func appendConn(IP string) {
 		var temp elevatorDriver.Connection
 		temp.IP = IP
 		temp.LastPing = time.Now()
-		temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal()
+		temp.Info.CurrentFloor = elevatorDriver.ElevGetFloorSensorSignal() //bug med currentFloor kanskje sende over nett?
 		temp.Info.Dir = 0
-
+		var msg Message
+		msg.MessageId = Ping
+		msg.Info = temp.Info
 		elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs, temp)
 		fmt.Println("Connected elevator: ", IP)
 
-		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-			fmt.Println("Current floor, ", elevatorDriver.ConnectedElevs[elev].IP, ": ", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
-		}
 		conn[IP] = true
 		selectMaster()
+
+		chOut <- msg
 	}
 
 }
@@ -133,19 +134,15 @@ func selectMaster() {
 	fmt.Println("Master: ", masterIP)
 }
 
-func removeConn(elev int) {
+func removeConn(elev int, chOut chan Message) {
 	fmt.Println("Removed: ", elevatorDriver.ConnectedElevs[elev].IP)
 	delete(conn, elevatorDriver.ConnectedElevs[elev].IP)
 	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
 	selectMaster()
-}
 
-func SendNetworkMessage(order elevatorDriver.Order, selfIP string, toIP string, msgId int, chToNetwork chan Message) {
-	var msg Message
-	msg.Order = order
-	msg.ToIP = toIP
-	msg.FromIP = selfIP
-	msg.MessageId = msgId
+	var temp Message
+	temp.MessageId = Removed
 
-	chToNetwork <- msg
+	chOut <- temp
+
 }

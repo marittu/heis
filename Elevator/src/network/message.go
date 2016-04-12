@@ -10,8 +10,9 @@ const ( //type of network message
 	Ping             = 1
 	NewOrder         = 2
 	OrderFromMaster  = 3
-	NewInternalOrder = 5
 	Ack              = 4
+	NewInternalOrder = 5
+	Removed          = 6
 )
 
 type Message struct {

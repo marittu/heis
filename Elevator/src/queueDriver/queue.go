@@ -76,9 +76,10 @@ func DeleteOrder(floor int, selfIP string) {
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 		if Queue[floor][button] == 1 {
 			Queue[floor][button] = 0
+
+			MasterQueue[floor][button] = 0
 		}
 
-		//MasterQueue[floor][button] = 0
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 			if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
 				elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] = 0
@@ -265,7 +266,7 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 func PrintQueue() {
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-			fmt.Print(Queue[floor][button])
+			fmt.Print(MasterQueue[floor][button])
 		}
 		fmt.Println()
 	}

@@ -90,6 +90,31 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					elevatorDriver.ElevSetButtonLamp(message.Info.CurrentFloor, button, 0)
 				}
 
+			case network.Removed:
+
+				var added bool
+				//If removed elevator has unfinished orders - master handles them
+				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+						for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+							if queueDriver.MasterQueue[floor][button] == 1 && elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] == 1 {
+								added = true
+								break
+							} else if queueDriver.MasterQueue[floor][button] == 1 && elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] == 0 {
+								added = false
+							}
+						}
+						if added == false {
+							if SelfIP == elevatorDriver.ConnectedElevs[0].Master {
+								order := elevatorDriver.Order{Floor: floor, ButtonType: button}
+								queueDriver.AddOrder(order)
+							}
+						}
+
+					}
+
+				}
+
 			}
 		}
 	}
