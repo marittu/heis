@@ -8,7 +8,6 @@ import (
 	"./userInterfaceDriver"
 	"fmt"
 	"os"
-	//"os/exec"
 	"time"
 )
 
@@ -28,9 +27,7 @@ func main() {
 			fmt.Println("Error, file not read")
 		}
 	}
-	/*
-		backup := exec.Command("gnome-terminal", "-x", "sh", "-c", "go run main.go")
-		backup.Run()*/
+
 	queueDriver.QueueInit()
 	elevatorDriver.ElevInit(0)
 
@@ -46,11 +43,7 @@ func main() {
 
 /*
 Ting som ikke funker:
-
-Når en heis mister nettet - klikker den andre
 litt bug når vi dreper programmet
-backup
-invalid memory address or nil pointer referance ved oppstart av backup
 hvis en heis er kobla ut lenge - ordre må gis til andre
 
 

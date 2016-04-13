@@ -47,9 +47,6 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 					}
 
-					//fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].LastPing)
-					//fmt.Println(elevatorDriver.ConnectedElevs[elevs].IP, "	", elevatorDriver.ConnectedElevs[elevs].Info.CurrentFloor)
-
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
 					if time.Since(stillAlive.LastPing) > 600*time.Millisecond {
@@ -85,7 +82,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 			}
 
-			if received.MessageId == Floor {
+			if received.MessageId == Floor { //trenger vi denne?
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
