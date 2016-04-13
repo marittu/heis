@@ -130,7 +130,6 @@ func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message)
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
 			elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor = floor
-			fmt.Println(elevatorDriver.ConnectedElevs[elev].IP, "	", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
 		}
 	}
 	mutex.Unlock()
@@ -212,7 +211,6 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	if EmptyQueue() == true {
 		elevatorDriver.ElevDrive(0)
 		setDir(0, selfIP)
-		//setCurrentFloor(floor, selfIP)
 
 	} else {
 		if Queue[floor][2] == 1 { //internal order
@@ -240,7 +238,7 @@ func stopAtFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 func GetDirection(selfIP string, chToNetwork chan network.Message) {
 	currentDir := GetDir()
 	currentFloor := GetCurrentFloor()
-	if EmptyQueue() == true { //trenger vi denne?
+	if EmptyQueue() == true {
 		setDir(0, selfIP)
 	} else {
 

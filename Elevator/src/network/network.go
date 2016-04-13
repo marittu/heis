@@ -74,7 +74,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 				}
 			}
 
-			/*if received.MessageId == Floor { //trenger vi denne?
+			if received.MessageId == Floor { //trenger vi denne?
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
@@ -87,7 +87,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 				}
 
-			}*/
+			}
 
 			chOut <- received
 

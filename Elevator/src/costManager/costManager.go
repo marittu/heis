@@ -26,9 +26,7 @@ func GetTargetElevator(order elevatorDriver.Order) string {
 func getOwnCost(pos int, order elevatorDriver.Order) int {
 
 	cost := 0
-	fmt.Println("get curfloor ip")
 	cur := queueDriver.GetCurrentFloorIP(elevatorDriver.ConnectedElevs[pos].IP)
-	fmt.Println("get curfloor ip done")
 	//fmt.Println("CurrentFloor ", cur, "for elev ", elevatorDriver.ConnectedElevs[pos].IP)
 
 	if (cur == order.Floor) && (elevatorDriver.ConnectedElevs[pos].Info.Dir == 0) {
