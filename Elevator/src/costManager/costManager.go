@@ -11,7 +11,9 @@ func GetTargetElevator(order elevatorDriver.Order) string {
 	target := elevatorDriver.ConnectedElevs[0].IP
 	min := 100
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+		fmt.Println("Calculating cost for: ", elevatorDriver.ConnectedElevs[elev].IP)
 		cost := getOwnCost(elev, order)
+		fmt.Println("Done calculating cost for: ", elevatorDriver.ConnectedElevs[elev].IP)
 		if cost < min {
 			min = cost
 			target = elevatorDriver.ConnectedElevs[elev].IP
@@ -29,11 +31,13 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 	info := queueDriver.GetInfoIP(elevatorDriver.ConnectedElevs[pos].IP)
 	dir := info.Dir
 	currentFloor := info.CurrentFloor
-	//fmt.Println("CurrentFloor ", cur, "for elev ", elevatorDriver.ConnectedElevs[pos].IP)
+	fmt.Println("CurrentFloor: ", currentFloor)
+	fmt.Println("Dir: ", dir)
 
 	if currentFloor == order.Floor /*&& (dir == 0)*/ {
 		//elevator already at floor
 		cost = 0
+		fmt.Println("At floor")
 		return cost
 	}
 
@@ -41,24 +45,27 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 		//elevator already has orders at floor
 		if elevatorDriver.ConnectedElevs[pos].CostQueue[order.Floor][button] == 1 {
 			cost = 1
+			fmt.Println("Order at floor")
 			return cost
 		}
 	}
-
+	i := 0
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
-			fmt.Print(elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button])
+			//fmt.Print(elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button])
 			if elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button] == 1 {
 				cost += 5 //higher cost for more orders
-				fmt.Println("Already has orders")
+				i += 5
+
 			}
 		}
-		fmt.Println()
+		//fmt.Println()
 	}
-	fmt.Println()
+	fmt.Println("Already has orders, cost: ", i)
+	//fmt.Println()
 
 	cost += 2 * int(math.Abs(float64(order.Floor-currentFloor))) //adds cost for distance from floor
-	fmt.Println("Cost from different floor: ", int(math.Abs(float64(order.Floor-currentFloor))))
+	fmt.Println("Cost from different floor: ", 2*int(math.Abs(float64(order.Floor-currentFloor))))
 
 	if dir == 1 && order.ButtonType == 1 { //elevator going up order going down
 		cost += 3
