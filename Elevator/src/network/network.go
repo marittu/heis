@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	//"sync"
 )
 
 var conn map[string]bool
@@ -87,6 +88,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
+
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
 						chOut <- received
 					}

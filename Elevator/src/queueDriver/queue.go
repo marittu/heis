@@ -6,12 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"sync"
 	"time"
 )
 
 var Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 var MasterQueue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 var Info elevatorDriver.ElevInfo
+var mutex sync.Mutex
 
 func QueueInit() {
 
@@ -116,6 +118,8 @@ func openDoor(floor int, selfIP string, chToNetwork chan network.Message) {
 }
 
 func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message) {
+	mutex.Lock()
+
 	Info.CurrentFloor = floor
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
@@ -123,7 +127,7 @@ func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message)
 			fmt.Println(elevatorDriver.ConnectedElevs[elev].IP, "	", elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor)
 		}
 	}
-
+	mutex.Unlock()
 	var temp elevatorDriver.ElevInfo
 	temp.Dir = 0
 	temp.CurrentFloor = floor
@@ -155,6 +159,8 @@ func GetDir() int {
 }
 
 func setDir(dir int, selfIP string) {
+	mutex.Lock()
+
 	Info.Dir = dir
 
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
@@ -162,6 +168,7 @@ func setDir(dir int, selfIP string) {
 			elevatorDriver.ConnectedElevs[elev].Info.Dir = dir
 		}
 	}
+	mutex.Unlock()
 
 }
 
