@@ -24,7 +24,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			if order.ButtonType == 2 { //BUTTON_INTERNAL
 
-				queueDriver.AddOrder(order) // , SelfIP
+				queueDriver.AddOrder(order)
 				queueDriver.GetDirection(SelfIP, chToNetwork)
 
 				var temp elevatorDriver.ElevInfo
@@ -98,10 +98,10 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 						for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-							if queueDriver.MasterQueue[floor][button] == elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] {
+							if queueDriver.MasterQueue[floor][button] == elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
 								added = true
 								break
-							} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].OwnQueue[floor][button] {
+							} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
 								added = false
 							}
 						}

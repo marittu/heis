@@ -58,10 +58,10 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 			}
 
 			if received.MessageId == NewInternalOrder || received.MessageId == OrderFromMaster {
-
+				//Adds orders to the elevators ownQueue - used for calculating cost
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
-						elevatorDriver.ConnectedElevs[elev].OwnQueue[received.Order.Floor][received.Order.ButtonType] = 1
+						elevatorDriver.ConnectedElevs[elev].CostQueue[received.Order.Floor][received.Order.ButtonType] = 1
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
 						chOut <- received
 					}
@@ -74,7 +74,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
-						elevatorDriver.ConnectedElevs[elev].OwnQueue[received.Order.Floor][received.Order.ButtonType] = 0
+						elevatorDriver.ConnectedElevs[elev].CostQueue[received.Order.Floor][received.Order.ButtonType] = 0
 						chOut <- received
 					}
 

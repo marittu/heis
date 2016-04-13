@@ -42,11 +42,11 @@ type ElevInfo struct {
 }
 
 type Connection struct {
-	IP       string
-	LastPing time.Time
-	Master   string
-	OwnQueue [N_FLOORS][N_BUTTONS]int
-	Info     ElevInfo
+	IP        string
+	LastPing  time.Time
+	Master    string
+	CostQueue [N_FLOORS][N_BUTTONS]int
+	Info      ElevInfo
 }
 
 var ConnectedElevs []Connection
