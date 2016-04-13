@@ -28,13 +28,6 @@ func ElevInit() {
 	}
 	fmt.Println("Initialized")
 	ElevSetDoorOpenLamp(0)
-	//floor := ElevGetFloorSensorSignal()
-	/*if floor == -1 {
-		ElevDrive(-1)
-
-	} else {
-		ElevDrive(0)
-	}*/
 	ElevDrive(-1)
 
 }

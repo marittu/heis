@@ -33,7 +33,6 @@ func QueueInit() {
 }
 
 func AddOrder(order elevatorDriver.Order) {
-	fmt.Println("Order at: ", order.Floor)
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
 	FileWrite(elevatorDriver.QUEUE)
