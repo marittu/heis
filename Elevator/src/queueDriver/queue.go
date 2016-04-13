@@ -20,16 +20,23 @@ var Info elevatorDriver.ElevInfo
 var mutex sync.Mutex
 
 func QueueInit() {
-
 	FileRead(elevatorDriver.QUEUE)
-
+	time.Sleep(100 * time.Millisecond)
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 			Queue[floor][button] = 0 //Exteral orders handled by other elevators
 			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
+			fmt.Println("Lights off")
+
 		}
 	}
-	//GetDirection(selfIP, chToNetwork)
+	PrintQueue()
+	/*if EmptyQueue() {
+
+	} else {
+		elevatorDriver.ElevDrive(-1)
+	}*/
+
 }
 
 func AddOrder(order elevatorDriver.Order) {
@@ -37,6 +44,7 @@ func AddOrder(order elevatorDriver.Order) {
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
 	FileWrite(elevatorDriver.QUEUE)
+	PrintQueue()
 }
 
 func AddOrderMasterQueue(order elevatorDriver.Order) {
@@ -44,6 +52,7 @@ func AddOrderMasterQueue(order elevatorDriver.Order) {
 		MasterQueue[order.Floor][order.ButtonType] = 1
 		elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1) //light turned on for all elevators
 	}
+	PrintQueue()
 
 }
 

@@ -28,13 +28,14 @@ func ElevInit() {
 	}
 	fmt.Println("Initialized")
 	ElevSetDoorOpenLamp(0)
-	floor := ElevGetFloorSensorSignal()
-	if floor == -1 {
+	//floor := ElevGetFloorSensorSignal()
+	/*if floor == -1 {
 		ElevDrive(-1)
 
 	} else {
 		ElevDrive(0)
-	}
+	}*/
+	ElevDrive(-1)
 
 }
 
@@ -54,6 +55,7 @@ func ElevDrive(dir ElevMotorDirection) {
 }
 
 func ElevSetButtonLamp(floor int, button ElevButtonType, value int) {
+	fmt.Println("ElevSetButtonLamp(", floor, ",", button, ",", value, ")")
 	if floor >= 0 && floor < N_FLOORS && button >= 0 && button < N_BUTTONS {
 		if value == 1 {
 			ioSetBit(lampMatrix[floor][button])
