@@ -44,6 +44,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 					if received.FromIP == elevatorDriver.ConnectedElevs[elevs].IP {
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
+						fmt.Println(elevatorDriver.ConnectedElevs[elevs].LastPing)
 					}
 
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
@@ -67,9 +68,11 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 			if received.MessageId == Ack {
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
-						elevatorDriver.ConnectedElevs[elev].CostQueue[received.Order.Floor][received.Order.ButtonType] = 0
-						chOut <- received
+					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+						if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
+							elevatorDriver.ConnectedElevs[elev].CostQueue[received.Info.CurrentFloor][button] = 0
+							chOut <- received
+						}
 					}
 				}
 			}
