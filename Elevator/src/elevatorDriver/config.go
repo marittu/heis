@@ -39,6 +39,7 @@ type Order struct {
 type ElevInfo struct {
 	Dir          int
 	CurrentFloor int
+	State        int // 0 Idle, 1 moving, 3 door open
 }
 
 type Connection struct {
@@ -50,9 +51,3 @@ type Connection struct {
 }
 
 var ConnectedElevs []Connection
-
-/*type MasterStruct struct{
-
-}
-
-var MasterStruct MasterStruct*/
