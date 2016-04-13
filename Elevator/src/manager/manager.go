@@ -116,9 +116,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					}
 
 				}
-				queueDriver.GetDirection(SelfIP, chToNetwork)'
-
-				
+				queueDriver.GetDirection(SelfIP, chToNetwork)
 
 			}
 		}
