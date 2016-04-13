@@ -157,15 +157,17 @@ func GetCurrentFloor() int {
 }
 
 //Gets current floor for a given elevator
-func GetCurrentFloorIP(IP string) int {
+func GetInfoIP(IP string) elevatorDriver.ElevInfo {
 	mutex.Lock()
 	defer mutex.Unlock()
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == IP {
-			return elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor
+			return elevatorDriver.ConnectedElevs[elev].Info
+			break
 		}
 	}
-	return -1
+
+	return elevatorDriver.ElevInfo{CurrentFloor: 0, Dir: 0}
 }
 
 func GetDir() int {
@@ -195,7 +197,6 @@ func setDir(dir int, selfIP string, chToNetwork chan network.Message) {
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
-	//PrintQueue()
 	setCurrentFloor(floor, selfIP, chToNetwork)
 	elevatorDriver.ElevSetFloorIndicator(floor)
 	dir := GetDir()
