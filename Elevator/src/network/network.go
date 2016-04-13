@@ -44,7 +44,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 					if received.FromIP == elevatorDriver.ConnectedElevs[elevs].IP {
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
-						fmt.Println(elevatorDriver.ConnectedElevs[elevs].LastPing)
+						//fmt.Println(elevatorDriver.ConnectedElevs[elevs].LastPing)
 					}
 
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
