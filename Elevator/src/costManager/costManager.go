@@ -31,14 +31,15 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 
 	if (cur == order.Floor) && (elevatorDriver.ConnectedElevs[pos].Info.Dir == 0) {
 		//elevator already at floor
-
 		cost = 0
+		return cost
 	}
 
 	for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
 		//elevator already has orders at floor
 		if elevatorDriver.ConnectedElevs[pos].CostQueue[order.Floor][button] == 1 {
 			cost = 1
+			return cost
 		}
 	}
 

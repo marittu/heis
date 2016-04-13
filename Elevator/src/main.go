@@ -40,11 +40,3 @@ func main() {
 	}
 
 }
-
-/*
-Ting som ikke funker:
-litt bug når vi dreper programmet
-hvis en heis er kobla ut lenge - ordre må gis til andre
-
-
-*/
