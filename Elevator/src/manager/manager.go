@@ -100,12 +100,14 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 								break
 							} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
 								added = false
+
 							}
 						}
 						if added == false {
 							if SelfIP == elevatorDriver.ConnectedElevs[0].Master {
 								order := elevatorDriver.Order{Floor: floor, ButtonType: button}
 								queueDriver.AddOrder(order)
+								fmt.Pritlnt("Adding orders from removed elevator: ", order)
 
 							}
 						}
