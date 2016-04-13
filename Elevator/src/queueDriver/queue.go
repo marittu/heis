@@ -26,16 +26,9 @@ func QueueInit() {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 			Queue[floor][button] = 0 //Exteral orders handled by other elevators
 			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
-			fmt.Println("Lights off")
 
 		}
 	}
-	PrintQueue()
-	/*if EmptyQueue() {
-
-	} else {
-		elevatorDriver.ElevDrive(-1)
-	}*/
 
 }
 

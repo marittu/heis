@@ -55,7 +55,6 @@ func ElevDrive(dir ElevMotorDirection) {
 }
 
 func ElevSetButtonLamp(floor int, button ElevButtonType, value int) {
-	fmt.Println("ElevSetButtonLamp(", floor, ",", button, ",", value, ")")
 	if floor >= 0 && floor < N_FLOORS && button >= 0 && button < N_BUTTONS {
 		if value == 1 {
 			ioSetBit(lampMatrix[floor][button])
@@ -118,4 +117,8 @@ func ElevSetDoorOpenLamp(value int) {
 	} else {
 		ioClearBit(LIGHT_DOOR_OPEN)
 	}
+}
+
+func ElevGetStopButton() bool {
+	return ioReadBit(STOP)
 }

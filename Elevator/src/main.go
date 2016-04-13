@@ -19,6 +19,17 @@ var chFromNetwork = make(chan network.Message, 100)
 
 func main() {
 
+	elevatorDriver.ElevInit()
+
+	go func() {
+		for {
+			time.Sleep(25 * time.Millisecond)
+			if elevatorDriver.ElevGetStopButton() {
+				panic("Stop button pressed")
+			}
+		}
+	}()
+
 	if _, err := os.Open(elevatorDriver.QUEUE); err == nil {
 		queueDriver.FileRead(elevatorDriver.QUEUE)
 	} else {
@@ -29,7 +40,6 @@ func main() {
 	}
 
 	queueDriver.QueueInit()
-	elevatorDriver.ElevInit()
 
 	go userInterfaceDriver.NewOrder(chButtonPressed)
 	go userInterfaceDriver.FloorTracker(chGetFloor)
