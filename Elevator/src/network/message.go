@@ -15,6 +15,7 @@ const ( //type of network message
 	NewInternalOrder = 5
 	Removed          = 6
 	Floor            = 7
+	Dir              = 8
 )
 
 type Message struct {

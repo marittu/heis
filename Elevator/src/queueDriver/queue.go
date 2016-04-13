@@ -37,7 +37,6 @@ func AddOrder(order elevatorDriver.Order) {
 	Queue[order.Floor][order.ButtonType] = 1
 	elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1)
 	FileWrite(elevatorDriver.QUEUE)
-	PrintQueue()
 }
 
 func AddOrderMasterQueue(order elevatorDriver.Order) {
@@ -45,8 +44,6 @@ func AddOrderMasterQueue(order elevatorDriver.Order) {
 		MasterQueue[order.Floor][order.ButtonType] = 1
 		elevatorDriver.ElevSetButtonLamp(order.Floor, order.ButtonType, 1) //light turned on for all elevators
 	}
-	PrintQueue()
-
 }
 
 func EmptyQueue() bool {
@@ -105,10 +102,19 @@ func DeleteOrder(floor int, selfIP string) {
 func openDoor(floor int, selfIP string, chToNetwork chan network.Message) {
 
 	DeleteOrder(floor, selfIP)
+	setDir(0, selfIP, chToNetwork)
+	const duration = 2 * time.Second
+
+	timer := time.NewTimer(0)
+	timer.Stop()
+	timer.Reset(duration)
 	elevatorDriver.ElevSetDoorOpenLamp(1)
-	time.Sleep(2 * time.Second)
-	elevatorDriver.ElevSetDoorOpenLamp(0)
-	setDir(0, selfIP)
+	select {
+	case <-timer.C:
+		timer.Stop()
+		elevatorDriver.ElevSetDoorOpenLamp(0)
+
+	}
 
 	var temp elevatorDriver.ElevInfo
 	temp.Dir = 0
@@ -121,7 +127,6 @@ func openDoor(floor int, selfIP string, chToNetwork chan network.Message) {
 
 	chToNetwork <- msg
 	GetDirection(selfIP, chToNetwork)
-	//printQueue()
 
 }
 
@@ -136,7 +141,6 @@ func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message)
 	}
 	mutex.Unlock()
 	var temp elevatorDriver.ElevInfo
-	temp.Dir = 0
 	temp.CurrentFloor = floor
 	var msg network.Message
 	msg.FromIP = selfIP
@@ -152,6 +156,7 @@ func GetCurrentFloor() int {
 	return Info.CurrentFloor
 }
 
+//Gets current floor for a given elevator
 func GetCurrentFloorIP(IP string) int {
 	mutex.Lock()
 	defer mutex.Unlock()
@@ -160,7 +165,6 @@ func GetCurrentFloorIP(IP string) int {
 			return elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor
 		}
 	}
-
 	return -1
 }
 
@@ -170,7 +174,7 @@ func GetDir() int {
 	return Info.Dir
 }
 
-func setDir(dir int, selfIP string) {
+func setDir(dir int, selfIP string, chToNetwork chan network.Message) {
 	mutex.Lock()
 	Info.Dir = dir
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
@@ -179,6 +183,14 @@ func setDir(dir int, selfIP string) {
 		}
 	}
 	mutex.Unlock()
+	var temp elevatorDriver.ElevInfo
+	temp.Dir = dir
+	var msg network.Message
+	msg.FromIP = selfIP
+	msg.Info = temp
+	msg.MessageId = network.Dir
+
+	chToNetwork <- msg
 }
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
@@ -200,7 +212,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 
 	if EmptyQueue() == true {
 		elevatorDriver.ElevDrive(0)
-		setDir(0, selfIP)
+		setDir(0, selfIP, chToNetwork)
 
 	} else {
 		if Queue[floor][2] == 1 { //internal order
@@ -229,7 +241,7 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 	currentDir := GetDir()
 	currentFloor := GetCurrentFloor()
 	if EmptyQueue() == true {
-		setDir(0, selfIP)
+		setDir(0, selfIP, chToNetwork)
 	} else {
 
 		switch currentDir {
@@ -238,10 +250,10 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 					if Queue[floor][button] == 1 {
 						if floor > currentFloor {
-							setDir(1, selfIP)
+							setDir(1, selfIP, chToNetwork)
 							elevatorDriver.ElevDrive(1)
 						} else if floor < currentFloor {
-							setDir(-1, selfIP)
+							setDir(-1, selfIP, chToNetwork)
 							elevatorDriver.ElevDrive(-1)
 						} else if floor == currentFloor {
 							openDoor(floor, selfIP, chToNetwork)
@@ -254,7 +266,7 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 			if OrderAbove(currentFloor) {
 				elevatorDriver.ElevDrive(1)
 			} else if OrderBelow(currentFloor) {
-				setDir(-1, selfIP)
+				setDir(-1, selfIP, chToNetwork)
 				elevatorDriver.ElevDrive(-1)
 			}
 		case -1:
@@ -262,7 +274,7 @@ func GetDirection(selfIP string, chToNetwork chan network.Message) {
 
 				elevatorDriver.ElevDrive(-1)
 			} else if OrderAbove(currentFloor) {
-				setDir(1, selfIP)
+				setDir(1, selfIP, chToNetwork)
 				elevatorDriver.ElevDrive(1)
 			}
 

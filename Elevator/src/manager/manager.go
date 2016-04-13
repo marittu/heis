@@ -27,9 +27,11 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				queueDriver.AddOrder(order)
 				queueDriver.GetDirection(SelfIP, chToNetwork)
 
+				//Sending internal order to be added to the elevators CostQueue
 				var temp elevatorDriver.ElevInfo
 				temp.Dir = queueDriver.GetDir()
 				temp.CurrentFloor = queueDriver.GetCurrentFloor()
+
 				var msg network.Message
 				msg.Order = order
 				msg.Info = temp
@@ -40,7 +42,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				chToNetwork <- msg
 
 			} else { //External order
-
+				//Sending external order to be added to the master queue and find target elevator
 				var msg network.Message
 				msg.Order = order
 				msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
@@ -48,26 +50,23 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				msg.MessageId = network.NewOrder
 
 				chToNetwork <- msg
-
 			}
-
-			break
 
 		case floor := <-chGetFloor:
 			queueDriver.PassingFloor(floor, SelfIP, chToNetwork)
-
-			break
 
 		case message := <-chFromNetwork:
 
 			switch message.MessageId {
 
 			case network.NewOrder:
+				//Calculates the target elevator to take the order
 				queueDriver.AddOrderMasterQueue(message.Order)
 				if SelfIP == message.ToIP { //if master
-
 					target := costManager.GetTargetElevator(message.Order)
 					fmt.Println("target", target)
+
+					//Sends order to target elevator for it to be added to CostQueue and its own queue
 					var msg network.Message
 					msg.Order = message.Order
 					msg.ToIP = target
@@ -79,11 +78,9 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.OrderFromMaster:
 				if SelfIP == message.ToIP { //if master
-
+					//Elevator recieved external order from master
 					queueDriver.AddOrder(message.Order)
 					queueDriver.GetDirection(SelfIP, chToNetwork)
-
-					break
 				}
 
 			case network.Ack:
@@ -112,12 +109,9 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 							}
 						}
-
 					}
-
 				}
 				queueDriver.GetDirection(SelfIP, chToNetwork)
-
 			}
 		}
 	}

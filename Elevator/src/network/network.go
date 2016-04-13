@@ -44,7 +44,6 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 					if received.FromIP == elevatorDriver.ConnectedElevs[elevs].IP {
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
-						//fmt.Println(elevatorDriver.ConnectedElevs[elevs].LastPing)
 					}
 
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
@@ -60,7 +59,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 						elevatorDriver.ConnectedElevs[elev].CostQueue[received.Order.Floor][received.Order.ButtonType] = 1
-						elevatorDriver.ConnectedElevs[elev].Info = received.Info
+						elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor = received.Info.CurrentFloor
 						chOut <- received
 					}
 				}
@@ -77,12 +76,24 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 				}
 			}
 
-			if received.MessageId == Floor { //trenger vi denne?
+			if received.MessageId == Floor {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 						mutex.Lock()
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
+						mutex.Unlock()
+						chOut <- received
+					}
+				}
+			}
+
+			if received.MessageId == Dir { //trenger vi denne?
+
+				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
+					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
+						mutex.Lock()
+						elevatorDriver.ConnectedElevs[elev].Info.Dir = received.Info.Dir
 						mutex.Unlock()
 						chOut <- received
 

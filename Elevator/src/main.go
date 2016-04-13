@@ -46,7 +46,5 @@ func main() {
 	go manager.ChannelHandler(chButtonPressed, chGetFloor, chFromNetwork, chToNetwork)
 	go network.NetworkHandler(chToNetwork, chFromNetwork)
 
-	for {
-	}
-
+	select {}
 }
