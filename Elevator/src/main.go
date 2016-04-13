@@ -29,7 +29,7 @@ func main() {
 	}
 
 	queueDriver.QueueInit()
-	elevatorDriver.ElevInit(0)
+	elevatorDriver.ElevInit()
 
 	go userInterfaceDriver.NewOrder(chButtonPressed)
 	go userInterfaceDriver.FloorTracker(chGetFloor)
