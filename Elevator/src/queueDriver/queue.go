@@ -164,17 +164,17 @@ func GetDir() int {
 }
 
 func setDir(dir int, selfIP string) {
-
+	mutex.Lock()
 	Info.Dir = dir
 
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
-			mutex.Lock()
+
 			elevatorDriver.ConnectedElevs[elev].Info.Dir = dir
-			mutex.Unlock()
+
 		}
 	}
-
+	mutex.Unlock()
 }
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message) {
