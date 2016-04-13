@@ -46,14 +46,17 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
+			fmt.Print(elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button])
 			if elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button] == 1 {
-				cost += 3 //higher cost for more orders
+				cost += 5 //higher cost for more orders
 				//fmt.Println("Already has orders")
 			}
 		}
+		fmt.Println()
 	}
+	fmt.Println()
 
-	cost += int(math.Abs(float64(order.Floor - cur))) //adds cost for distance from floor
+	cost += 2 * int(math.Abs(float64(order.Floor-cur))) //adds cost for distance from floor
 	//fmt.Println("Cost from different floor: ", int(math.Abs(float64(order.Floor-cur))))
 
 	//funker dir?
