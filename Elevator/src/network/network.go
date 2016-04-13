@@ -6,11 +6,12 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
-	//"sync"
 )
 
 var conn map[string]bool
+var mutex sync.Mutex
 
 func broadcastIP(IP string, chSend chan Message) {
 	for {
@@ -88,9 +89,11 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
-
+						mutex.Lock()
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
+						mutex.Unlock()
 						chOut <- received
+
 					}
 
 				}

@@ -140,11 +140,14 @@ func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message)
 }
 
 func GetCurrentFloor() int {
-
+	mutex.Lock()
+	defer mutex.Unlock()
 	return Info.CurrentFloor
 }
 
 func GetCurrentFloorIP(IP string) int {
+	mutex.Lock()
+	defer mutex.Unlock()
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == IP {
 			return elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor
@@ -155,20 +158,22 @@ func GetCurrentFloorIP(IP string) int {
 }
 
 func GetDir() int {
+	mutex.Lock()
+	defer mutex.Unlock()
 	return Info.Dir
 }
 
 func setDir(dir int, selfIP string) {
-	mutex.Lock()
 
 	Info.Dir = dir
 
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
+			mutex.Lock()
 			elevatorDriver.ConnectedElevs[elev].Info.Dir = dir
+			mutex.Unlock()
 		}
 	}
-	mutex.Unlock()
 
 }
 
