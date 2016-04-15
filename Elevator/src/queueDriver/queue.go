@@ -28,6 +28,7 @@ func QueueInit() {
 
 		}
 	}
+	PrintQueue1()
 }
 
 func AddOrder(order elevatorDriver.Order) {
