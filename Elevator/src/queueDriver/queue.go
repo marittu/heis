@@ -25,7 +25,6 @@ func QueueInit() {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 			Queue[floor][button] = 0 //Exteral orders handled by other elevators
 			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
-
 		}
 	}
 }
@@ -269,7 +268,6 @@ func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, Doortimer *
 						} else if floor < currentFloor {
 							setDir(-1, selfIP, chToNetwork)
 						} 
-
 					}
 				}
 			}
@@ -285,9 +283,7 @@ func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, Doortimer *
 			} else if orderAbove(currentFloor) {
 				setDir(1, selfIP, chToNetwork)
 			}
-
 		}
-
 	}
 }
 

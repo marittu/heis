@@ -52,7 +52,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			}
 
 		case floor := <-chGetFloor:
-			//fmt.Println("State: ", elevatorDriver.Info.State)
 			queueDriver.PassingFloor(floor, SelfIP, chToNetwork, DoorTimer, MovingTimer)
 
 		case <-DoorTimer.C:
@@ -190,8 +189,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 							if len(elevatorDriver.ConnectedElevs) > 1{
 								queueDriver.Queue[floor][button] = 0
 
-							}
-							
+							}							
 						}
 					}
 				}
