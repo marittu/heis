@@ -170,7 +170,25 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 			case network.MovingTimeOut:
 				if SelfIP == message.ToIP{
-					fmt.Println("To: ", message.ToIP)
+					for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+						if elevatorDriver.ConnectedElevs[elev].IP == message.FromIP{
+							for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+								for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
+										if elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] == 1{
+											order := elevatorDriver.Order{Floor: floor, ButtonType: button}
+											queueDriver.AddOrder(order)
+											fmt.Println("Adding orders from removed elevator: ", order)	
+											elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] = 0
+										}
+										
+								}
+							}
+						}
+						
+					}
+					if elevatorDriver.Info.State == elevatorDriver.Idle{
+						queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
+					}
 				}
 			}
 		}

@@ -232,6 +232,8 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, Do
 		setDir(0, selfIP, chToNetwork)
 		time.Sleep(100 * time.Millisecond)
 		elevatorDriver.Info.State = elevatorDriver.Idle
+		elevatorDriver.Info.TimedOut = false
+		fmt.Println("TimedOut: ", elevatorDriver.Info.TimedOut)
 		GetNextOrder(selfIP, chToNetwork, Doortimer, MovingTimer)
 	}
 }
@@ -256,6 +258,7 @@ func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, Doortimer *
 			MovingTimer.Stop()
 			MovingTimer.Reset(duration)
 			elevatorDriver.Info.TimedOut = false
+			fmt.Println("TimedOut: ", elevatorDriver.Info.TimedOut)
 			switch currentDir {
 			case 0:
 				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
