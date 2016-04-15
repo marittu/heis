@@ -82,9 +82,6 @@ func DeleteOrder(floor int, selfIP string) {
 			Queue[floor][button] = 0
 			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
 		}
-		if button < 2 { //only external orders
-			MasterQueue[floor][button] = 0
-		}
 
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 			if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
@@ -187,7 +184,7 @@ func setDir(dir int, selfIP string, chToNetwork chan<- network.Message) {
 }
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, timer *time.Timer) {
-	fmt.Println("In passing floor")
+	PrintQueue()
 	switch(elevatorDriver.Info.State){
 	case elevatorDriver.Moving:
 		fmt.Println("moving")
@@ -241,8 +238,18 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, ti
 
 
 	case elevatorDriver.DoorOpen:
-		break
+		elevatorDriver.ElevDrive(0)
+		time.Sleep(100 * time.Millisecond)
+		//GetNextOrder(selfIP, chToNetwork, timer)
+		elevatorDriver.Info.State = elevatorDriver.Idle
+	
+	default:
+		elevatorDriver.ElevDrive(0)
+		time.Sleep(100 * time.Millisecond)
+		//GetNextOrder(selfIP, chToNetwork, timer)
+		elevatorDriver.Info.State = elevatorDriver.Idle
 	}
+
 
 }
 

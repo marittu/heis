@@ -29,8 +29,11 @@ func ElevInit() {
 	fmt.Println("Initialized")
 	ElevSetDoorOpenLamp(0)
 	ElevDrive(-1)
-	Info.State = Moving
-	fmt.Println("Init State ", Info.State)
+	for{
+		if ElevGetFloorSensorSignal() != -1{
+			break
+		}
+	}
 }
 
 func ElevDrive(dir ElevMotorDirection) {

@@ -25,7 +25,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				if elevatorDriver.Info.State == elevatorDriver.Idle{
 					queueDriver.GetNextOrder(SelfIP, chToNetwork, timer)	
 				}
-				
 
 				//Sending internal order to be added to the elevators CostQueue
 				var temp elevatorDriver.ElevInfo
@@ -97,6 +96,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			case network.Ack:
 				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 					elevatorDriver.ElevSetButtonLamp(message.Info.CurrentFloor, button, 0)
+					queueDriver.MasterQueue[message.Info.CurrentFloor][button] = 0
 				}
 
 			case network.Removed:
