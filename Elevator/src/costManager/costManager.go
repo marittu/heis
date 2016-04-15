@@ -17,7 +17,6 @@ func GetTargetElevator(order elevatorDriver.Order) string {
 		if cost < min {
 			min = cost
 			target = elevatorDriver.ConnectedElevs[elev].IP
-
 		}
 
 		fmt.Println("Cost: ", cost, "for elev: ", elevatorDriver.ConnectedElevs[elev].IP) //fjern før levering
@@ -52,14 +51,11 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 	i := 0
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
-			//fmt.Print(elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button])
 			if elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button] == 1 {
 				cost += 2 //higher cost for more orders
 				i += 2
-
 			}
 		}
-		//fmt.Println()
 	}
 	fmt.Println("Already has orders, cost: ", i)
 	//fmt.Println()

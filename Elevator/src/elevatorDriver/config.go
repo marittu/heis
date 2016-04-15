@@ -39,8 +39,17 @@ type Order struct {
 type ElevInfo struct {
 	Dir          int
 	CurrentFloor int
-	State        int // 0 Idle, 1 moving, 3 door open
+	State        StateType
 }
+
+var Info ElevInfo
+
+type StateType int
+const(
+	Idle 		= 0
+	Moving 		= 1
+	DoorOpen 	= 2
+)
 
 type Connection struct {
 	IP        string

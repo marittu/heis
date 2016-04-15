@@ -15,7 +15,6 @@ var Queue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS]int{}
 
 //MasterQueue contains all external orders until they are executed
 var MasterQueue = [elevatorDriver.N_FLOORS][elevatorDriver.N_BUTTONS - 1]int{}
-var Info elevatorDriver.ElevInfo
 
 var mutex sync.Mutex
 
@@ -29,7 +28,6 @@ func QueueInit() {
 
 		}
 	}
-
 }
 
 func AddOrder(order elevatorDriver.Order) {
@@ -82,6 +80,7 @@ func DeleteOrder(floor int, selfIP string) {
 	for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 		if Queue[floor][button] == 1 {
 			Queue[floor][button] = 0
+			elevatorDriver.ElevSetButtonLamp(floor, button, 0)
 		}
 		if button < 2 { //only external orders
 			MasterQueue[floor][button] = 0
@@ -90,7 +89,7 @@ func DeleteOrder(floor int, selfIP string) {
 		for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 			if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
 				elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] = 0
-				elevatorDriver.ElevSetButtonLamp(floor, button, 0)
+				
 			}
 		}
 	}
@@ -99,7 +98,7 @@ func DeleteOrder(floor int, selfIP string) {
 }
 
 func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, timer *time.Timer) {
-	Info.State = 2 //fix
+	elevatorDriver.Info.State = elevatorDriver.DoorOpen 
 	DeleteOrder(floor, selfIP)
 	setDir(0, selfIP, chToNetwork)
 	const duration = 2 * time.Second
@@ -107,9 +106,7 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, time
 	timer.Stop()
 	timer.Reset(duration)
 	elevatorDriver.ElevSetDoorOpenLamp(1)
-	time.Sleep(2*time.Second)
-	//elevatorDriver.ElevDrive(0)
-
+	
 	var temp elevatorDriver.ElevInfo
 	temp.Dir = 0
 	temp.CurrentFloor = floor
@@ -120,14 +117,14 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, time
 	msg.MessageId = network.Ack
 
 	chToNetwork <- msg
-	//	GetNextOrder(selfIP, chToNetwork, timer)
+	
 
 }
 
 func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message) {
 	mutex.Lock()
 
-	Info.CurrentFloor = floor
+	elevatorDriver.Info.CurrentFloor = floor
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
 			elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor = floor
@@ -147,10 +144,10 @@ func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message)
 func GetCurrentFloor() int {
 	mutex.Lock()
 	defer mutex.Unlock()
-	return Info.CurrentFloor
+	return elevatorDriver.Info.CurrentFloor
 }
 
-//Gets current floor for a given elevator
+//Gets current floor and direction for a given elevator
 func GetInfoIP(IP string) elevatorDriver.ElevInfo {
 	mutex.Lock()
 	defer mutex.Unlock()
@@ -167,12 +164,12 @@ func GetInfoIP(IP string) elevatorDriver.ElevInfo {
 func GetDir() int {
 	mutex.Lock()
 	defer mutex.Unlock()
-	return Info.Dir
+	return elevatorDriver.Info.Dir
 }
 
 func setDir(dir int, selfIP string, chToNetwork chan<- network.Message) {
 	mutex.Lock()
-	Info.Dir = dir
+	elevatorDriver.Info.Dir = dir
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		if elevatorDriver.ConnectedElevs[elev].IP == selfIP {
 			elevatorDriver.ConnectedElevs[elev].Info.Dir = dir
@@ -190,38 +187,61 @@ func setDir(dir int, selfIP string, chToNetwork chan<- network.Message) {
 }
 
 func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, timer *time.Timer) {
+	fmt.Println("In passing floor")
+	switch(elevatorDriver.Info.State){
+	case elevatorDriver.Moving:
+		fmt.Println("moving")
+		setCurrentFloor(floor, selfIP, chToNetwork)
+		elevatorDriver.ElevSetFloorIndicator(floor)
+		dir := GetDir()
 
-	setCurrentFloor(floor, selfIP, chToNetwork)
-	elevatorDriver.ElevSetFloorIndicator(floor)
-	dir := GetDir()
+		if floor == 0 {
+			fmt.Println("Should stop at floor 0")
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			GetNextOrder(selfIP, chToNetwork, timer)
+			elevatorDriver.Info.State = elevatorDriver.Idle
+		} else if floor == 3 {
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			GetNextOrder(selfIP, chToNetwork, timer)
+			elevatorDriver.Info.State = elevatorDriver.Idle
+		}
 
-	if floor == 0 {
-		elevatorDriver.ElevDrive(0)
-		time.Sleep(100 * time.Millisecond)
-		GetNextOrder(selfIP, chToNetwork, timer)
-	} else if floor == 3 {
-		elevatorDriver.ElevDrive(0)
-		time.Sleep(100 * time.Millisecond)
-		GetNextOrder(selfIP, chToNetwork, timer)
-	}
+		if EmptyQueue() == true { 
+			fmt.Println("I get here")
+			elevatorDriver.ElevDrive(0)
+			time.Sleep(100 * time.Millisecond)
+			setDir(0, selfIP, chToNetwork)
+			elevatorDriver.Info.State = elevatorDriver.Idle
 
-	if EmptyQueue() == true {
-		elevatorDriver.ElevDrive(0)
-		setDir(0, selfIP, chToNetwork)
+		} else {
+			if Queue[floor][2] == 1 { //internal order
+				stopAtFloor(floor, selfIP, chToNetwork, timer)
+			} else if dir == 1 && Queue[floor][0] == 1 { //order up, dir up
+				stopAtFloor(floor, selfIP, chToNetwork, timer)
+			} else if dir == -1 && Queue[floor][1] == 1 { //order down dir down
+				stopAtFloor(floor, selfIP, chToNetwork, timer)
+			} else if OrderBelow(floor) == false && dir == -1 && Queue[floor][0] == 1 { //order up going down
+				stopAtFloor(floor, selfIP, chToNetwork, timer)
+			} else if OrderAbove(floor) == false && dir == 1 && Queue[floor][1] == 1 { //order down going up
+				stopAtFloor(floor, selfIP, chToNetwork, timer)
 
-	} else {
-		if Queue[floor][2] == 1 { //internal order
-			stopAtFloor(floor, selfIP, chToNetwork, timer)
-		} else if dir == 1 && Queue[floor][0] == 1 { //order up, dir up
-			stopAtFloor(floor, selfIP, chToNetwork, timer)
-		} else if dir == -1 && Queue[floor][1] == 1 { //order down dir down
-			stopAtFloor(floor, selfIP, chToNetwork, timer)
-		} else if OrderBelow(floor) == false && dir == -1 && Queue[floor][0] == 1 { //order up going down
-			stopAtFloor(floor, selfIP, chToNetwork, timer)
-		} else if OrderAbove(floor) == false && dir == 1 && Queue[floor][1] == 1 { //order down going up
-			stopAtFloor(floor, selfIP, chToNetwork, timer)
+			}
 
 		}
+
+	case elevatorDriver.Idle:
+		fmt.Println("Idle")
+		elevatorDriver.ElevDrive(0)
+		time.Sleep(100 * time.Millisecond)
+		GetNextOrder(selfIP, chToNetwork, timer)
+		elevatorDriver.Info.State = elevatorDriver.Idle
+
+
+
+	case elevatorDriver.DoorOpen:
+		break
 	}
 
 }
@@ -233,14 +253,13 @@ func stopAtFloor(floor int, selfIP string, chToNetwork chan network.Message, tim
 }
 
 func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, timer *time.Timer) {
-	
-
 		currentDir := GetDir()
 		currentFloor := GetCurrentFloor()
 		if EmptyQueue() == true {
 			setDir(0, selfIP, chToNetwork)
+			elevatorDriver.Info.State = elevatorDriver.Idle
 		} else {
-
+			elevatorDriver.Info.State = elevatorDriver.Moving
 			switch currentDir {
 			case 0:
 				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
@@ -285,6 +304,16 @@ func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, timer *time
 //slett før levering
 func PrintQueue() {
 	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
+			fmt.Print(MasterQueue[floor][button])
+		}
+		fmt.Println()
+	}
+	fmt.Println()
+}
+
+func PrintQueue1() {
+	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 			fmt.Print(Queue[floor][button])
 		}
@@ -293,6 +322,7 @@ func PrintQueue() {
 	fmt.Println()
 }
 
+//Internal Order backup
 func FileRead(file string) {
 	input, err := ioutil.ReadFile(file)
 	if err != nil {
