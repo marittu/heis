@@ -107,6 +107,7 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, time
 	timer.Stop()
 	timer.Reset(duration)
 	elevatorDriver.ElevSetDoorOpenLamp(1)
+	time.Sleep(2*time.Second)
 	//elevatorDriver.ElevDrive(0)
 
 	var temp elevatorDriver.ElevInfo
@@ -119,7 +120,7 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, time
 	msg.MessageId = network.Ack
 
 	chToNetwork <- msg
-	//	GetDirection(selfIP, chToNetwork, timer)
+	//	GetNextOrder(selfIP, chToNetwork, timer)
 
 }
 
@@ -197,11 +198,11 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, ti
 	if floor == 0 {
 		elevatorDriver.ElevDrive(0)
 		time.Sleep(100 * time.Millisecond)
-		GetDirection(selfIP, chToNetwork, timer)
+		GetNextOrder(selfIP, chToNetwork, timer)
 	} else if floor == 3 {
 		elevatorDriver.ElevDrive(0)
 		time.Sleep(100 * time.Millisecond)
-		GetDirection(selfIP, chToNetwork, timer)
+		GetNextOrder(selfIP, chToNetwork, timer)
 	}
 
 	if EmptyQueue() == true {
@@ -231,7 +232,7 @@ func stopAtFloor(floor int, selfIP string, chToNetwork chan network.Message, tim
 	openDoor(floor, selfIP, chToNetwork, timer)
 }
 
-func GetDirection(selfIP string, chToNetwork chan<- network.Message, timer *time.Timer) {
+func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, timer *time.Timer) {
 	if Info.State == 2 { //lag switch
 
 		currentDir := GetDir()

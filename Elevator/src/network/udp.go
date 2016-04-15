@@ -1,4 +1,4 @@
-package network //Endre pakkenavn til liten n
+package network 
 
 import (
 	"../elevatorDriver"
@@ -13,10 +13,7 @@ func UDPSender(chSend chan Message) {
 	broadcastUDP, _ := net.ResolveUDPAddr("udp", strings.Join(broadcastAddr, ""))
 	broadcastConn, _ := net.DialUDP("udp", nil, broadcastUDP)
 	defer broadcastConn.Close()
-	for {
-		fmt.Println("US waiting")
-		msg, err := json.Marshal(<-chSend)
-		fmt.Println("US recv'd: ", string(msg))
+	for {msg, err := json.Marshal(<-chSend)
 		if err != nil {
 			fmt.Println(err)
 		} else {

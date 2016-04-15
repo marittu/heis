@@ -21,14 +21,14 @@ func main() {
 
 	elevatorDriver.ElevInit()
 
-	go func() {
+	/*go func() {
 		for {
 			time.Sleep(25 * time.Millisecond)
 			if elevatorDriver.ElevGetStopButton() {
 				panic("Stop button pressed")
 			}
 		}
-	}()
+	}()*/
 
 	if _, err := os.Open(elevatorDriver.QUEUE); err == nil {
 		queueDriver.FileRead(elevatorDriver.QUEUE)
