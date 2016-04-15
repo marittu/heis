@@ -2,9 +2,7 @@ package userInterfaceDriver
 
 import (
 	"../elevatorDriver"
-	//"../queueDriver"
 	"time"
-	//"fmt"
 )
 
 func NewOrder(chButtonPressed chan elevatorDriver.Order) {
@@ -21,7 +19,6 @@ func NewOrder(chButtonPressed chan elevatorDriver.Order) {
 			}
 		}
 	}
-
 }
 
 func FloorTracker(chGetFloor chan int) {
@@ -35,5 +32,4 @@ func FloorTracker(chGetFloor chan int) {
 			chGetFloor <- currentFloor
 		}
 	}
-
 }

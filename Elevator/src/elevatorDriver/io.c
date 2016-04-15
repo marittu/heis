@@ -8,7 +8,7 @@ static comedi_t *it_g = NULL;
 
 
 int io_init(void) {
-
+ 
     it_g = comedi_open("/dev/comedi0");
 
     if (it_g == NULL) {

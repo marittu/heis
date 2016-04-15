@@ -109,7 +109,8 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, Door
 	temp.CurrentFloor = floor
 	var msg network.Message
 
-	if len(elevatorDriver.ConnectedElevs) > 1{ //If program killed while door open, elevator might not be connected yet
+	//If program killed while door open, elevator might not be connected yet
+	if len(elevatorDriver.ConnectedElevs) > 1{ 
 		msg.ToIP = elevatorDriver.ConnectedElevs[0].Master	
 	}else{
 		msg.ToIP = selfIP
@@ -120,7 +121,6 @@ func openDoor(floor int, selfIP string, chToNetwork chan<- network.Message, Door
 	msg.MessageId = network.Ack
 
 	chToNetwork <- msg
-	
 }
 
 func setCurrentFloor(floor int, selfIP string, chToNetwork chan network.Message) {
@@ -229,7 +229,6 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, Do
 		}
 
 	default:
-		PrintQueue1()
 		elevatorDriver.Info.State = elevatorDriver.Idle
 		MovingTimer.Stop()
 		elevatorDriver.Info.TimedOut = false
@@ -247,78 +246,49 @@ func stopAtFloor(floor int, selfIP string, chToNetwork chan network.Message, Doo
 }
 
 func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, Doortimer *time.Timer, MovingTimer *time.Timer) {
-		currentDir := GetDir()
-		currentFloor := GetCurrentFloor()
-		if emptyQueue() == true {
-			setDir(0, selfIP, chToNetwork)
-			elevatorDriver.Info.State = elevatorDriver.Idle
-		} else {
-			elevatorDriver.Info.State = elevatorDriver.Moving
-			const duration = 8 * time.Second
-			MovingTimer.Stop()
-			MovingTimer.Reset(duration)
-			elevatorDriver.Info.TimedOut = false
-			switch currentDir {
-			case 0:
-				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
-					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-						if Queue[floor][button] == 1 {
-							if floor == currentFloor {
-								openDoor(floor, selfIP, chToNetwork, Doortimer)
-							}else if floor > currentFloor {
-								setDir(1, selfIP, chToNetwork)
-								//elevatorDriver.Info.State = elevatorDriver.Moving
-							} else if floor < currentFloor {
-								setDir(-1, selfIP, chToNetwork)
-								//elevatorDriver.Info.State = elevatorDriver.Moving
-							} 
+	currentDir := GetDir()
+	currentFloor := GetCurrentFloor()
+	if emptyQueue() == true {
+		setDir(0, selfIP, chToNetwork)
+		elevatorDriver.Info.State = elevatorDriver.Idle
+	} else {
+		elevatorDriver.Info.State = elevatorDriver.Moving
+		const duration = 8 * time.Second
+		MovingTimer.Stop()
+		MovingTimer.Reset(duration)
+		elevatorDriver.Info.TimedOut = false
+		switch currentDir {
+		case 0:
+			for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+				for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
+					if Queue[floor][button] == 1 {
+						if floor == currentFloor {
+							openDoor(floor, selfIP, chToNetwork, Doortimer)
+						}else if floor > currentFloor {
+							setDir(1, selfIP, chToNetwork)
+						} else if floor < currentFloor {
+							setDir(-1, selfIP, chToNetwork)
+						} 
 
-						}
 					}
 				}
-			case 1:
-				if orderAbove(currentFloor) {
-					setDir(1, selfIP, chToNetwork)
-					//elevatorDriver.Info.State = elevatorDriver.Moving
-				} else if orderBelow(currentFloor) {
-					setDir(-1, selfIP, chToNetwork)
-					//elevatorDriver.Info.State = elevatorDriver.Moving
-				}
-			case -1:
-				if orderBelow(currentFloor) {
-					setDir(-1, selfIP, chToNetwork)
-					//elevatorDriver.Info.State = elevatorDriver.Moving
-				} else if orderAbove(currentFloor) {
-					setDir(1, selfIP, chToNetwork)
-					//elevatorDriver.Info.State = elevatorDriver.Moving
-				}
-
+			}
+		case 1:
+			if orderAbove(currentFloor) {
+				setDir(1, selfIP, chToNetwork)
+			} else if orderBelow(currentFloor) {
+				setDir(-1, selfIP, chToNetwork)
+			}
+		case -1:
+			if orderBelow(currentFloor) {
+				setDir(-1, selfIP, chToNetwork)
+			} else if orderAbove(currentFloor) {
+				setDir(1, selfIP, chToNetwork)
 			}
 
 		}
-	
 
-}
-
-//slett før levering
-func PrintQueue() {
-	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
-		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
-			fmt.Print(MasterQueue[floor][button])
-		}
-		fmt.Println()
 	}
-	fmt.Println()
-}
-
-func PrintQueue1() {
-	for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
-		for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
-			fmt.Print(Queue[floor][button])
-		}
-		fmt.Println()
-	}
-	fmt.Println()
 }
 
 //Internal Order backup

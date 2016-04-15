@@ -20,7 +20,7 @@ func UDPSender(chSend chan Message) {
 			broadcastConn.Write(msg)
 		}
 	}
-}
+} 
 
 func UDPListener(chReceive chan Message) {
 	UDPReceiveAddr, err := net.ResolveUDPAddr("udp", elevatorDriver.PORT)
@@ -44,7 +44,5 @@ func UDPListener(chReceive chan Message) {
 		} else {
 			chReceive <- receivedMessage
 		}
-
 	}
-
 }

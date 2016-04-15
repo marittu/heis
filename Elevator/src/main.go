@@ -29,6 +29,7 @@ func main() {
 			fmt.Println("Error, file not read")
 		}
 	}
+	
 	queueDriver.QueueInit()
 
 	go userInterfaceDriver.NewOrder(chButtonPressed)

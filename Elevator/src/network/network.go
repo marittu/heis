@@ -17,11 +17,10 @@ func broadcastIP(IP string, chSend chan Message) {
 	for {
 		chSend <- Message{FromIP: IP, MessageId: Ping, ToIP: ""}
 		time.Sleep(100 * time.Millisecond)
-
 	}
 }
 
-func NetworkHandler(chIn chan Message, chOut chan Message) {
+func NetworkHandler(chToNetwork chan Message, chFromNetwork chan Message) {
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(), "/")[0]
 
@@ -49,7 +48,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
 					if time.Since(stillAlive.LastPing) > 600*time.Millisecond {
-						removeElevator(elevs, chOut)
+						removeElevator(elevs, chFromNetwork)
 					}
 				}
 			}
@@ -60,7 +59,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 						elevatorDriver.ConnectedElevs[elev].CostQueue[received.Order.Floor][received.Order.ButtonType] = 1
 						elevatorDriver.ConnectedElevs[elev].Info.CurrentFloor = received.Info.CurrentFloor
-						chOut <- received
+						chFromNetwork <- received
 					}
 				}
 			}
@@ -70,47 +69,41 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS; button++ {
 						if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 							elevatorDriver.ConnectedElevs[elev].CostQueue[received.Info.CurrentFloor][button] = 0
-							chOut <- received
+							chFromNetwork <- received
 						}
 					}
 				}
 			}
 
 			if received.MessageId == Floor {
-
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 						mutex.Lock()
 						elevatorDriver.ConnectedElevs[elev].Info = received.Info
 						mutex.Unlock()
-						chOut <- received
+						chFromNetwork <- received
 					}
 				}
 			}
 
-			if received.MessageId == Dir { //trenger vi denne?
-
+			if received.MessageId == Dir { 
 				for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elev].IP {
 						mutex.Lock()
 						elevatorDriver.ConnectedElevs[elev].Info.Dir = received.Info.Dir
 						mutex.Unlock()
-						chOut <- received
-
+						chFromNetwork <- received
 					}
-
 				}
-
 			}
 
-			chOut <- received
+			chFromNetwork <- received
 
-		case send := <-chIn:
+		case send := <-chToNetwork:
 			chUDPSend <- send
 
 		}
 	}
-
 }
 
 func appendElevator(IP string) {
@@ -127,16 +120,13 @@ func appendElevator(IP string) {
 
 		conn[IP] = true
 		selectMaster()
-
 	}
-
 }
 
 func selectMaster() {
 	var masterIP string
 	min := 256
 	for i, _ := range elevatorDriver.ConnectedElevs {
-
 		endIP, _ := strconv.Atoi(strings.Replace(elevatorDriver.ConnectedElevs[i].IP, "129.241.187.", "", -1))
 
 		if endIP < min {
@@ -147,13 +137,11 @@ func selectMaster() {
 	for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
 		elevatorDriver.ConnectedElevs[elev].Master = masterIP
 	}
-
 	fmt.Println("Master: ", masterIP)
 }
 
-func removeElevator(elev int, chOut chan Message) {
+func removeElevator(elev int, chFromNetwork chan Message) {
 	IP := elevatorDriver.ConnectedElevs[elev].IP
-	
 	fmt.Println("Removed: ", IP)
 	delete(conn, elevatorDriver.ConnectedElevs[elev].IP)
 	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
@@ -164,5 +152,5 @@ func removeElevator(elev int, chOut chan Message) {
 	temp.FromIP = IP
 	temp.ToIP = elevatorDriver.ConnectedElevs[0].Master
 
-	chOut <- temp
+	chFromNetwork <- temp
 }

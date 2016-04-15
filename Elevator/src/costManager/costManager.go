@@ -3,7 +3,6 @@ package costManager
 import (
 	"../elevatorDriver"
 	"../queueDriver"
-	//"fmt"
 	"math"
 )
 
@@ -39,25 +38,29 @@ func getOwnCost(pos int, order elevatorDriver.Order) int {
 				return cost
 			}
 		}
+		//higher cost for more orders
 		for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 			for button := 0; button < elevatorDriver.N_BUTTONS; button++ {
 				if elevatorDriver.ConnectedElevs[pos].CostQueue[floor][button] == 1 {
-					cost += 2 //higher cost for more orders
+					cost += 2 
 				}
 			}
 		}
-
-		cost += 4 * int(math.Abs(float64(order.Floor-currentFloor))) //adds cost for distance from floor
+		//adds cost for distance from floor
+		cost += 4 * int(math.Abs(float64(order.Floor-currentFloor))) 
 		
-		if dir == 1 && order.ButtonType == 1 { //elevator going up order going down
+		//elevator going up order going down
+		if dir == 1 && order.ButtonType == 1 { 
 			cost += 3
-		} else if dir == -1 && order.ButtonType == 0 { //elevator going down order going up
+		//elevator going down order going up
+		} else if dir == -1 && order.ButtonType == 0 { 
 			cost += 3
 		}
 
 		return cost
 	
 	}else{
+		//Elevator Timed out
 		return 101		
 	}
 	
