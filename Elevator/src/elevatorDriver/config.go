@@ -26,7 +26,7 @@ const (
 type ElevMotorDirection int
 
 const (
-	DIR_DOWN ElevMotorDirection = -1
+	DIR_DOWN 					= -1
 	DIR_UP                      = 1
 	DIR_STOP                    = 0
 )

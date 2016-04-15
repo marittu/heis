@@ -52,7 +52,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 			}
 
 		case floor := <-chGetFloor:
-			fmt.Println("State: ", elevatorDriver.Info.State)
+			//fmt.Println("State: ", elevatorDriver.Info.State)
 			queueDriver.PassingFloor(floor, SelfIP, chToNetwork, timer)
 
 		case <-timer.C:

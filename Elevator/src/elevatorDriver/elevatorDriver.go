@@ -31,6 +31,7 @@ func ElevInit() {
 	ElevDrive(-1)
 	for{
 		if ElevGetFloorSensorSignal() != -1{
+			Info.CurrentFloor = ElevGetFloorSensorSignal()
 			break
 		}
 	}
