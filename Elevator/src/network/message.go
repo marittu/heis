@@ -15,7 +15,7 @@ const ( //type of network message
 	NewInternalOrder = 5
 	Removed          = 6
 	MovingTimeOut 	 = 7
-	Floor            = 8
+	Floor            = 8 
 	Dir              = 9
 
 )

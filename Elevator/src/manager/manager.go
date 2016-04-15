@@ -64,16 +64,11 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
 			}
 		case <- MovingTimer.C:
-			
-			fmt.Println("times out")
-
 			MovingTimer.Stop()
 
 			if elevatorDriver.Info.State == elevatorDriver.Moving{
 				elevatorDriver.Info.State = elevatorDriver.Idle
 				elevatorDriver.Info.TimedOut = true
-				fmt.Println("State: ", elevatorDriver.Info.State)
-				fmt.Println("TimedOut: ", elevatorDriver.Info.TimedOut)
 				var msg network.Message
 				msg.FromIP = SelfIP
 				msg.MessageId = network.MovingTimeOut
@@ -89,7 +84,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				}else{
 					msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
 				}
-
 				chToNetwork <- msg
 			}
 
@@ -130,7 +124,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				}
 
 			case network.Removed:
-				fmt.Println("Elevator removed")
 				//Elevator that is removed from network takes all orders in masterQueue
 				if len(elevatorDriver.ConnectedElevs) == 1{
 					for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
@@ -177,7 +170,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 										if elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] == 1{
 											order := elevatorDriver.Order{Floor: floor, ButtonType: button}
 											queueDriver.AddOrder(order)
-											fmt.Println("Adding orders from removed elevator: ", order)	
+											fmt.Println("Adding orders from timed out elevator: ", order)	
 											elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] = 0
 										}
 										
@@ -188,6 +181,17 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					}
 					if elevatorDriver.Info.State == elevatorDriver.Idle{
 						queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
+					}
+				}else if SelfIP == message.FromIP{
+					//Remove all external orders in timed out elevators queue
+					for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
+						for button := 0; button < elevatorDriver.N_BUTTONS - 1; button++ {
+							if len(elevatorDriver.ConnectedElevs) > 1{
+								queueDriver.Queue[floor][button] = 0
+
+							}
+							
+						}
 					}
 				}
 			}

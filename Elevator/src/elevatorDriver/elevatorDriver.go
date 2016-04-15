@@ -18,7 +18,7 @@ var buttonMatrix = [N_FLOORS][N_BUTTONS]int{
 	[3]int{BUTTON_UP1, BUTTON_DOWN1, BUTTON_COMMAND1},
 	[3]int{BUTTON_UP2, BUTTON_DOWN2, BUTTON_COMMAND2},
 	[3]int{BUTTON_UP3, BUTTON_DOWN3, BUTTON_COMMAND3},
-	[3]int{BUTTON_UP4, BUTTON_DOWN4, BUTTON_COMMAND4},
+	[3]int{BUTTON_UP4, BUTTON_DOWN4, BUTTON_COMMAND4}, 
 }
 
 func ElevInit() {
@@ -67,8 +67,6 @@ func ElevSetFloorIndicator(floor int) {
 		errors.New("Floor not valid")
 		return
 	}
-
-	// Binary encoding. One light must always be on.
 	if floor&0x02 != 0 {
 		ioSetBit(LIGHT_FLOOR_IND1)
 	} else {
