@@ -14,16 +14,17 @@ import (
 func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan int, chFromNetwork chan network.Message, chToNetwork chan network.Message) {
 	addr, _ := net.InterfaceAddrs()
 	SelfIP := strings.Split(addr[1].String(), "/")[0]
-	timer := time.NewTimer(0)
-
+	DoorTimer := time.NewTimer(0)
+	MovingTimer := time.NewTimer(0)
 	for {
 		select {
-		case order := <-chButtonPressed: //button pressed
-			if order.ButtonType == 2 { //BUTTON_INTERNAL
-
-				queueDriver.AddOrder(order)
+		case order := <-chButtonPressed: 
+			if order.ButtonType == elevatorDriver.BUTTON_INTERNAL{ 
+				
+				queueDriver.AddOrder(order)	
+								
 				if elevatorDriver.Info.State == elevatorDriver.Idle{
-					queueDriver.GetNextOrder(SelfIP, chToNetwork, timer)	
+					queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
 				}
 
 				//Sending internal order to be added to the elevators CostQueue
@@ -53,14 +54,37 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 		case floor := <-chGetFloor:
 			//fmt.Println("State: ", elevatorDriver.Info.State)
-			queueDriver.PassingFloor(floor, SelfIP, chToNetwork, timer)
+			queueDriver.PassingFloor(floor, SelfIP, chToNetwork, DoorTimer, MovingTimer)
 
-		case <-timer.C:
-			timer.Stop()
+		case <-DoorTimer.C:
+			DoorTimer.Stop()
 			elevatorDriver.ElevSetDoorOpenLamp(0)
 			elevatorDriver.Info.State = elevatorDriver.Idle
 			if elevatorDriver.Info.State == elevatorDriver.Idle{
-					queueDriver.GetNextOrder(SelfIP, chToNetwork, timer)	
+					queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
+			}
+		case <- MovingTimer.C:
+			MovingTimer.Stop()
+			if elevatorDriver.Info.State == elevatorDriver.Moving{
+				elevatorDriver.Info.State = elevatorDriver.Idle
+				elevatorDriver.Info.TimedOut = true
+				var msg network.Message
+				msg.FromIP = SelfIP
+				msg.MessageId = network.Removed
+				//If elevator is master, send orders to someone else
+				if SelfIP == elevatorDriver.ConnectedElevs[0].Master{
+					for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
+						if SelfIP != elevatorDriver.ConnectedElevs[elev].IP{
+							msg.ToIP = elevatorDriver.ConnectedElevs[elev].IP
+							break
+						}
+					}
+
+				}else{
+					msg.ToIP = elevatorDriver.ConnectedElevs[0].Master
+				}
+
+				chToNetwork <- msg
 			}
 
 		case message := <-chFromNetwork:
@@ -89,7 +113,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 					//Elevator recieved external order from master
 					queueDriver.AddOrder(message.Order)
 					if elevatorDriver.Info.State == elevatorDriver.Idle{
-						queueDriver.GetNextOrder(SelfIP, chToNetwork, timer)	
+						queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
 					}
 				}
 
@@ -114,25 +138,31 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				for floor := 0; floor < elevatorDriver.N_FLOORS; floor++ {
 					for button := elevatorDriver.BUTTON_CALL_UP; button < elevatorDriver.N_BUTTONS-1; button++ {
 						for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++ {
-							if queueDriver.MasterQueue[floor][button] == elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
-								added = true
-								break
-							} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
-								added = false
-							}
-						}
-						if added == false {
-							if SelfIP == elevatorDriver.ConnectedElevs[0].Master {
-								order := elevatorDriver.Order{Floor: floor, ButtonType: button}
-								queueDriver.AddOrder(order)
-								fmt.Println("Adding orders from removed elevator: ", order)
+							if elevatorDriver.ConnectedElevs[elev].IP == message.FromIP{ 	
+								if queueDriver.MasterQueue[floor][button] == elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
+									added = true
+									break
+								} else if queueDriver.MasterQueue[floor][button] != elevatorDriver.ConnectedElevs[elev].CostQueue[floor][button] {
+									added = false
+								}
+								if added == false {
+									if SelfIP == message.ToIP{
+										order := elevatorDriver.Order{Floor: floor, ButtonType: button}
+										queueDriver.AddOrder(order)
+										fmt.Println("Adding orders from removed elevator: ", order)
+									}
+								}
 							}
 						}
 					}
 				}
 				if elevatorDriver.Info.State == elevatorDriver.Idle{
-					queueDriver.GetNextOrder(SelfIP, chToNetwork, timer)	
+					queueDriver.GetNextOrder(SelfIP, chToNetwork, DoorTimer, MovingTimer)	
 				}
+
+			/*case network.MovingTimeOut:
+				for 
+				if message.FromIP != */
 			}
 		}
 	}

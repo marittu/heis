@@ -40,6 +40,7 @@ type ElevInfo struct {
 	Dir          int
 	CurrentFloor int
 	State        StateType
+	TimedOut 	 bool
 }
 
 var Info ElevInfo

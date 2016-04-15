@@ -152,13 +152,17 @@ func selectMaster() {
 }
 
 func removeConn(elev int, chOut chan Message) {
-	fmt.Println("Removed: ", elevatorDriver.ConnectedElevs[elev].IP)
+	IP := elevatorDriver.ConnectedElevs[elev].IP
+	
+	fmt.Println("Removed: ", IP)
 	delete(conn, elevatorDriver.ConnectedElevs[elev].IP)
 	elevatorDriver.ConnectedElevs = append(elevatorDriver.ConnectedElevs[:elev], elevatorDriver.ConnectedElevs[elev+1:]...)
 	selectMaster()
 
 	var temp Message
 	temp.MessageId = Removed
+	temp.FromIP = IP
+	temp.ToIP = elevatorDriver.ConnectedElevs[0].Master
 
 	chOut <- temp
 }
