@@ -76,7 +76,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				fmt.Println("TimedOut: ", elevatorDriver.Info.TimedOut)
 				var msg network.Message
 				msg.FromIP = SelfIP
-				msg.MessageId = network.Removed
+				msg.MessageId = network.MovingTimeOut
 				//If elevator is master, send orders to someone else
 				if SelfIP == elevatorDriver.ConnectedElevs[0].Master{
 					for elev := 0; elev < len(elevatorDriver.ConnectedElevs); elev++{
@@ -153,7 +153,7 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 									added = false
 								}
 								if added == false {
-									if SelfIP == message.ToIP{
+									if SelfIP == elevatorDriver.ConnectedElevs[0].Master{
 										order := elevatorDriver.Order{Floor: floor, ButtonType: button}
 										queueDriver.AddOrder(order)
 										fmt.Println("Adding orders from removed elevator: ", order)
@@ -168,9 +168,10 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 				}
 				break
 
-			/*case network.MovingTimeOut:
-				for 
-				if message.FromIP != */
+			case network.MovingTimeOut:
+				if SelfIP == message.ToIP{
+					fmt.Println("To: ", message.ToIP)
+				}
 			}
 		}
 	}
