@@ -22,8 +22,6 @@ func ChannelHandler(chButtonPressed chan elevatorDriver.Order, chGetFloor chan i
 
 		select {
 		case order := <-chButtonPressed: //button pressed
-			fmt.Println("Event: Button pressed: ", order)
-
 			if order.ButtonType == 2 { //BUTTON_INTERNAL
 
 				queueDriver.AddOrder(order)

@@ -233,7 +233,7 @@ func stopAtFloor(floor int, selfIP string, chToNetwork chan network.Message, tim
 }
 
 func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, timer *time.Timer) {
-	if Info.State == 2 { //lag switch
+	
 
 		currentDir := GetDir()
 		currentFloor := GetCurrentFloor()
@@ -278,7 +278,7 @@ func GetNextOrder(selfIP string, chToNetwork chan<- network.Message, timer *time
 			}
 
 		}
-	}
+	
 
 }
 
