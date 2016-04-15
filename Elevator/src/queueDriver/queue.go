@@ -233,7 +233,7 @@ func PassingFloor(floor int, selfIP string, chToNetwork chan network.Message, ti
 		fmt.Println("Idle")
 		elevatorDriver.ElevDrive(0)
 		time.Sleep(100 * time.Millisecond)
-		GetNextOrder(selfIP, chToNetwork, timer)
+		//GetNextOrder(selfIP, chToNetwork, timer)
 		elevatorDriver.Info.State = elevatorDriver.Idle
 
 

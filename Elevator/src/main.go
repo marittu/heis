@@ -21,15 +21,6 @@ func main() {
 
 	elevatorDriver.ElevInit()
 
-	/*go func() {
-		for {
-			time.Sleep(25 * time.Millisecond)
-			if elevatorDriver.ElevGetStopButton() {
-				panic("Stop button pressed")
-			}
-		}
-	}()*/
-
 	if _, err := os.Open(elevatorDriver.QUEUE); err == nil {
 		queueDriver.FileRead(elevatorDriver.QUEUE)
 	} else {
@@ -38,7 +29,6 @@ func main() {
 			fmt.Println("Error, file not read")
 		}
 	}
-	queueDriver.PrintQueue1()
 	queueDriver.QueueInit()
 
 	go userInterfaceDriver.NewOrder(chButtonPressed)
