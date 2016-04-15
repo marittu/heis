@@ -29,8 +29,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 
 	chUDPSend := make(chan Message, 1)
 	chUDPReceive := make(chan Message, 100)
-	//go broadcastIP(SelfIP, chUDPSend)
-	chUDPSend <- Message{FromIP: SelfIP, MessageId: Ping, ToIP: ""}
+	go broadcastIP(SelfIP, chUDPSend)
 	go UDPListener(chUDPReceive)
 	go UDPSender(chUDPSend)
 
@@ -46,6 +45,7 @@ func NetworkHandler(chIn chan Message, chOut chan Message) {
 					if received.FromIP == elevatorDriver.ConnectedElevs[elevs].IP {
 						elevatorDriver.ConnectedElevs[elevs].LastPing = time.Now()
 					}
+					
 					stillAlive := elevatorDriver.ConnectedElevs[elevs]
 
 					if time.Since(stillAlive.LastPing) > 600*time.Millisecond {
